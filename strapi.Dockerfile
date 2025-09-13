@@ -1,6 +1,7 @@
-FROM node:20-alpine
+FROM node:22-alpine
 WORKDIR /srv/app
+COPY package.json ./
 COPY . .
-RUN cd apps/cms && npm install
+RUN npm install
 EXPOSE 1337
-CMD ["npm", "run", "develop", "--workspace=cms"]
+CMD ["npm", "run", "develop"]

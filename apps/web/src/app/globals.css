@@ -1,8 +1,30 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Primary Colors */
+  --primary: #E53935;
+  --primary-dark: #C62828;
+  --primary-light: #FF6F60;
+  
+  /* Secondary Colors */
+  --secondary: #009688;
+  --secondary-dark: #00796B;
+  --secondary-light: #4DB6AC;
+  
+  /* Neutral Colors */
+  --neutral-dark: #212121;
+  --neutral: #424242;
+  --neutral-light: #E0E0E0;
+  --background: #FAFAFA;
+  --surface: #FFFFFF;
+  
+  /* Accent Colors */
+  --info: #1976D2;
+  --warning: #F9A825;
+  --success: #2E7D32;
+  
+  /* Legacy variables for compatibility */
+  --foreground: var(--neutral-dark);
 }
 
 @theme inline {
@@ -12,15 +34,30 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Custom utility classes for our color palette */
+.text-primary { color: var(--primary); }
+.text-primary-dark { color: var(--primary-dark); }
+.text-primary-light { color: var(--primary-light); }
+.text-secondary { color: var(--secondary); }
+.text-secondary-dark { color: var(--secondary-dark); }
+.text-secondary-light { color: var(--secondary-light); }
+.text-neutral-dark { color: var(--neutral-dark); }
+.text-neutral { color: var(--neutral); }
+
+.bg-primary { background-color: var(--primary); }
+.bg-primary-dark { background-color: var(--primary-dark); }
+.bg-primary-light { background-color: var(--primary-light); }
+.bg-secondary { background-color: var(--secondary); }
+.bg-secondary-dark { background-color: var(--secondary-dark); }
+.bg-secondary-light { background-color: var(--secondary-light); }
+.bg-surface { background-color: var(--surface); }
+
+.border-neutral-light { border-color: var(--neutral-light); }
+.border-primary { border-color: var(--primary); }
+.border-secondary { border-color: var(--secondary); }

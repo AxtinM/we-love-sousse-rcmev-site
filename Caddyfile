@@ -1,0 +1,7 @@
+localhost:80 {
+    reverse_proxy web:3000
+}
+
+localhost:1337 {
+    reverse_proxy cms:1337
+}

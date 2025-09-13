@@ -1,8 +1,5 @@
 import { getGlobal, getArticles, getPartners, getStats } from "@/lib/api";
 
-// Enable ISR with 1 hour revalidation
-export const revalidate = 3600; // 1 hour in seconds
-
 export default async function Home() {
   // Fetch data on the server
   const [global, articles, partners, stats] = await Promise.all([

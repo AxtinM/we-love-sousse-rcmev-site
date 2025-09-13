@@ -1,0 +1,46 @@
+version: "3.9"
+services:
+  proxy:
+    image: caddy:2
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./docker/Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+    depends_on:
+      - web
+      - cms
+
+  web:
+    build:
+      context: ./apps/web
+      dockerfile: ../../docker/web.Dockerfile
+    env_file: .env
+    restart: always
+
+  cms:
+    build:
+      context: ./apps/cms
+      dockerfile: ../../docker/strapi.Dockerfile
+    env_file: .env
+    volumes:
+      - strapi_uploads:/app/public/uploads
+    depends_on:
+      - db
+    restart: always
+
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: strapi
+      POSTGRES_USER: strapi
+      POSTGRES_PASSWORD: changeme
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    restart: always
+
+volumes:
+  db_data:
+  strapi_uploads:
+  caddy_data:

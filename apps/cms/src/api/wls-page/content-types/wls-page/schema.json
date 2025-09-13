@@ -1,0 +1,23 @@
+{
+  "kind": "singleType",
+  "collectionName": "wls_page",
+  "info": {
+    "singularName": "wls-page",
+    "pluralName": "wls-pages",
+    "displayName": "WLS Page",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "body": {
+      "type": "richtext"
+    }
+  }
+}

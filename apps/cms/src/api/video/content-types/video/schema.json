@@ -5,7 +5,7 @@
     "singularName": "video",
     "pluralName": "videos",
     "displayName": "Video",
-    "description": ""
+    "description": "YouTube video embeds for the project"
   },
   "options": {
     "draftAndPublish": true
@@ -16,28 +16,30 @@
       "type": "string",
       "required": true
     },
-    "slug": {
-      "type": "uid",
-      "targetField": "title",
-      "required": true
-    },
     "description": {
       "type": "text"
     },
-    "videoType": {
-      "type": "enumeration",
-      "enum": ["YouTube", "Vimeo", "Direct"],
-      "required": true
-    },
-    "embedIdOrUrl": {
+    "youtubeUrl": {
       "type": "string",
       "required": true
+    },
+    "youtubeId": {
+      "type": "string"
     },
     "thumbnail": {
       "type": "media",
       "multiple": false,
       "required": false,
       "allowedTypes": ["images"]
+    },
+    "category": {
+      "type": "enumeration",
+      "enum": ["conference", "formation", "competition", "autres"],
+      "default": "autres"
+    },
+    "order": {
+      "type": "integer",
+      "default": 0
     }
   }
 }

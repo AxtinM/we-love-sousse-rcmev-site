@@ -11,6 +11,17 @@ const nextConfig: NextConfig = {
   },
   // Disable trailing slash
   trailingSlash: false,
+  // Configure images
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+        port: '1337',
+        pathname: '/uploads/**',
+      },
+    ],
+  },
 };
 
 export default nextConfig;

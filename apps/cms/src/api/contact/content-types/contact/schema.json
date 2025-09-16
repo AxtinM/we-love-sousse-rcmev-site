@@ -1,31 +1,35 @@
 {
-  "kind": "singleType",
-  "collectionName": "contact",
+  "kind": "collectionType",
+  "collectionName": "contacts",
   "info": {
     "singularName": "contact",
     "pluralName": "contacts",
     "displayName": "Contact",
-    "description": ""
+    "description": "Contact form submissions from the website"
   },
   "options": {
-    "draftAndPublish": true
+    "draftAndPublish": false,
+    "timestamps": true
   },
   "pluginOptions": {},
   "attributes": {
+    "name": {
+      "type": "string",
+      "required": true,
+      "maxLength": 255
+    },
     "email": {
       "type": "email",
       "required": true
     },
-    "phones": {
-      "type": "component",
-      "repeatable": true,
-      "component": "shared.phone"
+    "subject": {
+      "type": "string",
+      "required": true,
+      "maxLength": 255
     },
-    "address": {
-      "type": "text"
-    },
-    "googleMapsUrl": {
-      "type": "string"
+    "message": {
+      "type": "text",
+      "required": true
     }
   }
 }

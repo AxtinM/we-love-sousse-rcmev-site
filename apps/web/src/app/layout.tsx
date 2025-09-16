@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Providers from "@/lib/providers";
 import Navigation from "@/components/Navigation";
+import Footer from "@/components/Footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -15,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "We Love Sousse",
-  description: "We Love Sousse - Découvrez Sousse",
+  title: "We Love Sousse - Projet RCMEV",
+  description: "Réponse Coordonnée à la Montée de l'Extrémisme Violent - Un projet pour renforcer la résilience des jeunes et des femmes en Tunisie",
 };
 
 export default function RootLayout({
@@ -30,7 +31,6 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Providers>
-          <Navigation />
           <main>{children}</main>
         </Providers>
       </body>

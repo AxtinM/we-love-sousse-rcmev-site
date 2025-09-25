@@ -62,25 +62,6 @@ export default function ImmersiveHeroSection() {
       {/* Main Content */}
       <div className="relative z-10 text-center text-white max-w-6xl mx-auto px-4">
         <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1.2, ease: 'easeOut' }}
-          className="mb-8"
-        >
-          <motion.h1
-            className="text-6xl lg:text-8xl xl:text-9xl font-bold mb-6 leading-tight"
-            style={{
-              background: 'linear-gradient(135deg, #fff, #e0e7ff, #c7d2fe)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-            }}
-          >
-            We Love Sousse
-          </motion.h1>
-        </motion.div>
-
-        <motion.div
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.3 }}

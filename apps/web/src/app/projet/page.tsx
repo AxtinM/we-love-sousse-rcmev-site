@@ -25,12 +25,12 @@ export default function ProjetPage() {
     },
     {
       title: 'Conférences et Débats',
-      image: '/images/project-activities/conférence attigue.jpg',
+      image: '/images/project-activities/conference-attigue.jpg',
       description: 'Organisation de conférences et panels sur la prévention de l\'extrémisme violent.'
     },
     {
       title: 'Compétitions de Débat',
-      image: '/images/project-activities/Comp de débat.jpg',
+      image: '/images/project-activities/comp-de-debat.jpg',
       description: 'Concours de débat pour promouvoir le dialogue constructif entre les jeunes.'
     },
     {

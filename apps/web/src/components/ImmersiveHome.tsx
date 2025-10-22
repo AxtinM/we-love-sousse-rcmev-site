@@ -378,7 +378,7 @@ export default function ImmersiveHome() {
             >
               <div className="relative h-64 overflow-hidden">
                 <Image
-                  src="/images/project-activities/conférence attigue.jpg"
+                  src="/images/project-activities/conference-attigue.jpg"
                   alt="Conférence sur la Prévention"
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-300"
@@ -398,7 +398,7 @@ export default function ImmersiveHome() {
             >
               <div className="relative h-64 overflow-hidden">
                 <Image
-                  src="/images/project-activities/Comp de débat.jpg"
+                  src="/images/project-activities/comp-de-debat.jpg"
                   alt="Compétition de Débat"
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-300"
@@ -438,7 +438,7 @@ export default function ImmersiveHome() {
             >
               <div className="relative h-64 overflow-hidden">
                 <Image
-                  src="/images/project-activities/TOT débat.jpg"
+                  src="/images/project-activities/tot-debat.jpg"
                   alt="Formation des Formateurs"
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-300"
@@ -514,7 +514,7 @@ export default function ImmersiveHome() {
               className="relative h-32 rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow group"
             >
               <Image
-                src="/images/project-activities/conférence deapeau tunisie.jpg"
+                src="/images/project-activities/conference-drapeau-tunisie.jpg"
                 alt="Conférence avec Drapeau Tunisien"
                 fill
                 className="object-cover group-hover:scale-105 transition-transform duration-300"

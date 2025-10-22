@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 
 export default function ImmersiveHeroSection() {
   const [mounted, setMounted] = useState(false);
@@ -29,13 +30,27 @@ export default function ImmersiveHeroSection() {
 
   return (
     <div className="h-full flex items-center justify-center relative overflow-hidden">
+      {/* Background Image */}
+      <div className="absolute inset-0">
+        <Image
+          src="/images/project-activities/activité atdef.jpg"
+          alt="We Love Sousse Project Activities"
+          fill
+          className="object-cover"
+          priority
+        />
+        {/* Overlay for better text readability */}
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-900/85 via-blue-900/75 to-teal-900/70" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/30" />
+      </div>
+
       {/* Animated Background Particles - Only render on client */}
       {mounted && particles.length > 0 && (
         <div className="absolute inset-0 pointer-events-none">
           {particles.map((particle, i) => (
             <motion.div
               key={i}
-              className="absolute w-1 h-1 bg-white/20 rounded-full"
+              className="absolute w-1.5 h-1.5 bg-gradient-to-r from-cyan-300/30 to-blue-300/30 rounded-full blur-sm"
               initial={{
                 x: particle.x,
                 y: particle.y,
@@ -43,7 +58,7 @@ export default function ImmersiveHeroSection() {
               animate={{
                 x: [particle.x, particle.x + 200, particle.x - 100],
                 y: [particle.y, particle.y - 150, particle.y + 100],
-                opacity: [0.2, 0.8, 0.2],
+                opacity: [0.1, 0.4, 0.1],
               }}
               transition={{
                 duration: particle.duration,
@@ -55,51 +70,68 @@ export default function ImmersiveHeroSection() {
         </div>
       )}
 
-      {/* Background Gradients - Removed parallax effect */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-purple-600/20" />
-      <div className="absolute inset-0 bg-gradient-to-tl from-indigo-600/10 to-pink-600/10" />
-
       {/* Main Content */}
-      <div className="relative z-10 text-center text-white max-w-6xl mx-auto px-4">
+      <div className="relative z-10 text-center text-white max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Project Logo */}
+        <motion.div
+          initial={{ opacity: 0, y: -30, scale: 0.8 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 1, delay: 0.1 }}
+          className="mb-8 sm:mb-10 lg:mb-12"
+        >
+          <div className="flex justify-center">
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              transition={{ duration: 0.3 }}
+              className="relative w-32 h-32 sm:w-40 sm:h-40 lg:w-48 lg:h-48 xl:w-56 xl:h-56"
+            >
+              <Image
+                src="/images/logo-WeLoveSousse.png"
+                alt="We Love Sousse - Logo du projet"
+                fill
+                className="object-contain drop-shadow-2xl"
+                priority
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/30 to-emerald-400/30 rounded-full blur-2xl scale-110" />
+            </motion.div>
+          </div>
+        </motion.div>
+
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.3 }}
-          className="mb-16"
+          className="mb-6 sm:mb-8 lg:mb-10"
         >
-          <h2 className="text-2xl lg:text-4xl xl:text-5xl font-light mb-6">
-            <motion.span
-              animate={{
-                textShadow: [
-                  '0 0 20px #fbbf24',
-                  '0 0 40px #fbbf24',
-                  '0 0 20px #fbbf24',
-                ],
-              }}
-              transition={{ duration: 3, repeat: Infinity }}
-              className="text-yellow-400 font-bold"
-            >
-              Réponse Coordonnée à la Montée de l'Extrémisme Violent
-            </motion.span>
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-poppins font-semibold mb-3 sm:mb-4 lg:mb-5 text-blue-100 tracking-wide">
+            Projet RCMEV
+          </h1>
+          <h2 className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-poppins font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-blue-300 to-teal-300 leading-tight">
+            Réponse Coordonnée à la Montée de l'Extrémisme Violent
           </h2>
-          <p className="text-lg lg:text-xl xl:text-2xl text-gray-300 max-w-4xl mx-auto leading-relaxed">
-            Un projet innovant pour renforcer la résilience des jeunes et des femmes en Tunisie,
-            construisant ensemble un avenir plus sûr et plus inclusif.
+          <p className="text-sm sm:text-base lg:text-lg font-inter text-slate-300 max-w-3xl mx-auto leading-relaxed font-light">
+            Plus d&apos;une décennie d&apos;engagement pour renforcer la résilience des jeunes et des femmes 
+            en Tunisie à travers la promotion du dialogue, de la tolérance et de l&apos;inclusion sociale.
           </p>
+          <div className="mt-6 flex flex-wrap justify-center gap-4 text-sm font-inter text-blue-200 font-medium">
+            <span className="bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full transition-colors hover:bg-white/15">Supervisé par CNLCT</span>
+            <span className="bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full transition-colors hover:bg-white/15">Financé par GCERF</span>
+            <span className="bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full transition-colors hover:bg-white/15">Depuis 2011</span>
+          </div>
         </motion.div>
 
-        {/* Animated Call-to-Action - Fixed clickable buttons */}
+        {/* Animated Call-to-Action - Responsive design */}
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.6 }}
-          className="flex flex-col sm:flex-row gap-6 justify-center items-center relative z-20"
+          className="flex flex-col sm:flex-row gap-3 lg:gap-4 justify-center items-center relative z-20 mb-3 sm:mb-4"
         >
           <motion.button
             onClick={() => scrollToSection('statistics')}
-            whileHover={{ scale: 1.05, boxShadow: '0 20px 40px rgba(59, 130, 246, 0.4)' }}
+            whileHover={{ scale: 1.05, boxShadow: '0 20px 40px rgba(6, 182, 212, 0.4)' }}
             whileTap={{ scale: 0.95 }}
-            className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-10 py-5 rounded-full font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer relative z-30"
+            className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-5 sm:px-6 py-2.5 sm:py-3 rounded-full font-poppins font-medium text-sm shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer relative z-30 backdrop-blur-sm border border-cyan-400/20 w-full sm:w-auto"
           >
             Découvrir Notre Impact
           </motion.button>
@@ -114,73 +146,87 @@ export default function ImmersiveHeroSection() {
                 behavior: 'smooth' 
               });
             }}
-            whileHover={{ scale: 1.05, boxShadow: '0 20px 40px rgba(147, 51, 234, 0.4)' }}
+            whileHover={{ scale: 1.05, boxShadow: '0 20px 40px rgba(16, 185, 129, 0.4)' }}
             whileTap={{ scale: 0.95 }}
-            className="bg-gradient-to-r from-purple-500 to-purple-600 text-white px-10 py-5 rounded-full font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer relative z-30"
+            className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-5 sm:px-6 py-2.5 sm:py-3 rounded-full font-poppins font-medium text-sm shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer relative z-30 backdrop-blur-sm border border-emerald-400/20 w-full sm:w-auto"
           >
             Voir nos Vidéos
           </motion.button>
-          
+        </motion.div>
+
+        {/* Secondary Actions - Responsive */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, delay: 0.8 }}
+          className="flex flex-col sm:flex-row gap-2 lg:gap-3 justify-center items-center relative z-20"
+        >
           <motion.button
             onClick={() => scrollToSection('partners')}
-            whileHover={{ scale: 1.05 }}
+            whileHover={{ scale: 1.05, backgroundColor: 'rgba(255, 255, 255, 0.15)' }}
             whileTap={{ scale: 0.95 }}
-            className="border-2 border-white/50 text-white px-10 py-5 rounded-full font-semibold text-lg hover:bg-white/10 hover:border-white transition-all duration-300 backdrop-blur-sm cursor-pointer relative z-30"
+            className="border-2 border-slate-300/40 text-slate-200 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full font-poppins font-medium text-xs hover:border-slate-200 hover:text-white transition-all duration-300 backdrop-blur-md cursor-pointer relative z-30 w-full sm:w-auto"
           >
             Nos Partenaires
           </motion.button>
 
           <motion.button
             onClick={() => scrollToSection('contact')}
-            whileHover={{ scale: 1.05, boxShadow: '0 20px 40px rgba(34, 197, 94, 0.4)' }}
+            whileHover={{ scale: 1.05, boxShadow: '0 15px 30px rgba(16, 185, 129, 0.3)' }}
             whileTap={{ scale: 0.95 }}
-            className="bg-gradient-to-r from-green-500 to-green-600 text-white px-10 py-5 rounded-full font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer relative z-30"
+            className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-full font-poppins font-medium text-xs shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer relative z-30 backdrop-blur-sm border border-emerald-400/20 w-full sm:w-auto"
           >
             Nous Contacter
           </motion.button>
         </motion.div>
 
-        {/* Scroll Indicator */}
+        {/* Scroll Indicator - Responsive */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1, delay: 1.2 }}
-          className="mt-16"
+          className="mt-6 sm:mt-8 lg:mt-10"
         >
-          <div className="flex flex-col items-center space-y-2">
-            <span className="text-sm text-gray-400 font-medium">Faites défiler pour explorer</span>
+          <div className="flex flex-col items-center space-y-1 sm:space-y-2">
+            <span className="text-xs font-inter text-slate-400 font-light tracking-wide">Faites défiler pour explorer</span>
             <motion.div
-              animate={{ y: [0, 10, 0] }}
-              transition={{ duration: 2, repeat: Infinity }}
-              className="w-6 h-10 border-2 border-gray-400 rounded-full flex justify-center"
+              animate={{ y: [0, 6, 0] }}
+              transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+              className="w-3 sm:w-4 h-5 sm:h-6 border-2 border-slate-300/60 rounded-full flex justify-center backdrop-blur-sm"
             >
               <motion.div
-                animate={{ y: [0, 16, 0] }}
-                transition={{ duration: 2, repeat: Infinity }}
-                className="w-1 h-3 bg-gradient-to-b from-white to-gray-400 rounded-full mt-2"
+                animate={{ y: [0, 8, 0], opacity: [0.4, 1, 0.4] }}
+                transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+                className="w-0.5 h-1.5 sm:h-2 bg-gradient-to-b from-cyan-300 to-blue-400 rounded-full mt-1"
               />
             </motion.div>
           </div>
         </motion.div>
       </div>
 
-      {/* Decorative Elements - Simpler animations */}
+      {/* Decorative Elements - Smaller and more subtle */}
       <motion.div
-        className="absolute top-20 left-20 w-20 h-20 border border-white/30 rounded-full"
-        animate={{ rotate: 360 }}
-        transition={{ duration: 30, repeat: Infinity, ease: 'linear' }}
+        className="absolute top-12 lg:top-16 left-8 lg:left-12 w-12 lg:w-16 h-12 lg:h-16 border-2 border-cyan-300/30 rounded-full backdrop-blur-sm"
+        animate={{ rotate: 360, scale: [1, 1.05, 1] }}
+        transition={{ duration: 35, repeat: Infinity, ease: 'linear' }}
       />
       
       <motion.div
-        className="absolute bottom-20 right-20 w-16 h-16 border border-white/30 rounded-full"
-        animate={{ rotate: -360 }}
-        transition={{ duration: 25, repeat: Infinity, ease: 'linear' }}
+        className="absolute bottom-12 lg:bottom-16 right-8 lg:right-12 w-10 lg:w-14 h-10 lg:h-14 border-2 border-emerald-300/30 rounded-full backdrop-blur-sm"
+        animate={{ rotate: -360, scale: [1, 0.95, 1] }}
+        transition={{ duration: 28, repeat: Infinity, ease: 'linear' }}
       />
       
       <motion.div
-        className="absolute top-1/2 left-10 w-2 h-20 bg-gradient-to-b from-blue-400 to-purple-400 rounded-full"
-        animate={{ scaleY: [1, 1.5, 1] }}
-        transition={{ duration: 4, repeat: Infinity }}
+        className="absolute top-1/2 left-4 lg:left-6 w-0.5 lg:w-1 h-12 lg:h-16 bg-gradient-to-b from-cyan-400/60 via-teal-400/40 to-emerald-400/60 rounded-full backdrop-blur-sm"
+        animate={{ scaleY: [1, 1.3, 1], opacity: [0.6, 1, 0.6] }}
+        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+      />
+      
+      <motion.div
+        className="absolute top-1/4 right-4 lg:right-6 w-0.5 lg:w-1 h-10 lg:h-14 bg-gradient-to-t from-emerald-400/60 via-teal-400/40 to-cyan-400/60 rounded-full backdrop-blur-sm"
+        animate={{ scaleY: [1, 1.2, 1], opacity: [0.5, 0.9, 0.5] }}
+        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 1 }}
       />
     </div>
   );

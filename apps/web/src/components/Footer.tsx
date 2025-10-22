@@ -77,6 +77,7 @@ export default function Footer() {
                 { name: 'Le Projet RCMEV', href: '/projet' },
                 { name: 'We Love Sousse', href: '/we-love-sousse' },
                 { name: 'Articles', href: '/articles' },
+                { name: 'Produits', href: '/produits' },
                 { name: 'Galerie Photos', href: '/photos' },
                 { name: 'Vidéos', href: '/videos' },
                 { name: 'Contact', href: '/contact' }

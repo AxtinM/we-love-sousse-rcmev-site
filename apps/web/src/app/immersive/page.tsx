@@ -40,14 +40,14 @@ export default function ImmersivePage() {
     <div ref={containerRef} className="relative">
       {/* Progress indicator */}
       <motion.div
-        className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-purple-500 z-50 origin-left"
+        className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 to-teal-500 z-50 origin-left"
         style={{ scaleX: scrollYProgress }}
       />
 
       {/* Hero Section */}
       <motion.section
         style={{ y: heroY }}
-        className="h-screen relative overflow-hidden bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900"
+        className="h-screen relative overflow-hidden bg-gradient-to-br from-slate-900 via-blue-900 to-teal-900"
       >
         <ImmersiveHeroSection />
       </motion.section>
@@ -55,7 +55,7 @@ export default function ImmersivePage() {
       {/* Statistics Section */}
       <motion.section
         style={{ y: statsY }}
-        className="h-screen relative bg-gradient-to-br from-indigo-900 to-purple-900 flex items-center justify-center"
+        className="h-screen relative bg-gradient-to-br from-teal-900 to-emerald-900 flex items-center justify-center"
       >
         <div className="container mx-auto px-4 text-center text-white">
           <motion.h2
@@ -113,7 +113,7 @@ export default function ImmersivePage() {
 
       {/* Video Playlist Section */}
       <motion.section
-        className="h-screen relative bg-gradient-to-br from-purple-900 to-slate-900 flex items-center justify-center"
+        className="h-screen relative bg-gradient-to-br from-emerald-900 to-slate-900 flex items-center justify-center"
       >
         <div className="container mx-auto px-4 text-center text-white">
           <motion.h2
@@ -130,7 +130,7 @@ export default function ImmersivePage() {
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-8 py-4 rounded-full font-semibold"
+            className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-8 py-4 rounded-full font-semibold"
           >
             Voir toutes les vidéos
           </motion.button>
@@ -139,7 +139,7 @@ export default function ImmersivePage() {
 
       {/* Partners Section */}
       <motion.section
-        className="h-screen relative bg-gradient-to-br from-slate-900 to-indigo-900 flex items-center justify-center"
+        className="h-screen relative bg-gradient-to-br from-slate-900 to-teal-900 flex items-center justify-center"
       >
         <div className="container mx-auto px-4 text-center text-white">
           <motion.h2

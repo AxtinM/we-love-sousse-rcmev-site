@@ -16,6 +16,8 @@ services:
       context: ./apps/web
       dockerfile: ../../web.Dockerfile
     env_file: .env
+    ports:
+      - "3000:3000"
     restart: always
 
   cms:

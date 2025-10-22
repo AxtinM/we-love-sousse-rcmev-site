@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { ShoppingBagIcon, TagIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import Image from 'next/image';
+import { getStrapiURL } from '@/lib/api';
 
 interface Product {
   id: number;
@@ -69,7 +70,7 @@ export default function ProductsSection() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_STRAPI_URL}/products?populate=*&pagination[limit]=6&sort=featured:desc,publishedAt:desc`);
+        const response = await fetch(`${getStrapiURL()}/products?populate=*&pagination[limit]=6&sort=featured:desc,publishedAt:desc`);
         if (response.ok) {
           const data: ProductsResponse = await response.json();
           setProducts(data.data || []);
@@ -102,9 +103,17 @@ export default function ProductsSection() {
     
     const image = product.images[0];
     const formats = image.formats;
-    return `${process.env.NEXT_PUBLIC_STRAPI_URL?.replace('/api', '') || 'http://localhost:1337'}${
-      formats.medium?.url || formats.large?.url || formats.small?.url || image.url
-    }`;
+    
+    // Server-side: use internal Docker hostname
+    if (typeof window === 'undefined') {
+      const internalUrl = process.env.STRAPI_URL || process.env.STRAPI_INTERNAL_URL || 'http://cms:1337/api';
+      const baseUrl = internalUrl.replace('/api', '');
+      return `${baseUrl}${formats.medium?.url || formats.large?.url || formats.small?.url || image.url}`;
+    }
+    
+    // Client-side: use public URL
+    const baseUrl = getStrapiURL().replace('/api', '');
+    return `${baseUrl}${formats.medium?.url || formats.large?.url || formats.small?.url || image.url}`;
   };
 
   if (loading) {

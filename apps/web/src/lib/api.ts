@@ -1,5 +1,20 @@
+/**
+ * Get the appropriate Strapi API URL based on environment
+ * - Server-side (Docker): uses internal service name
+ * - Client-side (Browser): uses public URL
+ */
+function getStrapiURL(): string {
+  // Server-side: use internal Docker service name
+  if (typeof window === 'undefined') {
+    return process.env.STRAPI_URL || process.env.STRAPI_INTERNAL_URL || process.env.NEXT_PUBLIC_STRAPI_URL || 'http://cms:1337/api';
+  }
+  
+  // Client-side: use public URL
+  return process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337/api';
+}
+
 // Use internal URL for server-side requests (Docker network) and external URL for client-side
-const STRAPI_API_URL = process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337/api';
+const STRAPI_API_URL = getStrapiURL();
 const STRAPI_API_TOKEN = process.env.STRAPI_TOKEN;
 
 interface StrapiResponse<T> {
@@ -130,5 +145,18 @@ export async function getPartners(): Promise<Partner[]> {
 export function getStrapiMediaUrl(url?: string): string {
   if (!url) return '';
   if (url.startsWith('http')) return url;
-  return `${process.env.STRAPI_API_URL?.replace('/api', '') || 'http://localhost:1337'}${url}`;
+  
+  // Server-side: use internal Docker hostname
+  if (typeof window === 'undefined') {
+    const internalUrl = process.env.STRAPI_URL || process.env.STRAPI_INTERNAL_URL || 'http://cms:1337/api';
+    const baseUrl = internalUrl.replace('/api', '');
+    return `${baseUrl}${url}`;
+  }
+  
+  // Client-side: use public URL
+  const baseUrl = getStrapiURL().replace('/api', '');
+  return `${baseUrl}${url}`;
 }
+
+// Export the getStrapiURL function for use in components
+export { getStrapiURL };

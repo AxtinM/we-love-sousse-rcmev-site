@@ -8,6 +8,7 @@ import ReactMarkdown from 'react-markdown';
 import { ArrowLeftIcon, ShoppingBagIcon, MapPinIcon, TagIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
 import ContactModal from '@/components/ContactModal';
+import { getStrapiURL } from '@/lib/api';
 
 interface Product {
   id: number;
@@ -77,7 +78,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
     setLoading(true);
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_STRAPI_URL}/products?filters[slug][$eq]=${slug}&populate=*`
+        `${getStrapiURL()}/products?filters[slug][$eq]=${slug}&populate=*`
       );
       
       if (response.ok) {
@@ -102,7 +103,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
   const fetchRelatedProducts = async (category: string, currentProductId: number) => {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_STRAPI_URL}/products?filters[category][$eq]=${category}&filters[id][$ne]=${currentProductId}&populate=*&pagination[limit]=4`
+        `${getStrapiURL()}/products?filters[category][$eq]=${category}&filters[id][$ne]=${currentProductId}&populate=*&pagination[limit]=4`
       );
       
       if (response.ok) {
@@ -118,9 +119,17 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
     if (!image) return '/images/default-product.jpg';
     
     const formats = image.formats;
-    return `${process.env.NEXT_PUBLIC_STRAPI_URL?.replace('/api', '') || 'http://localhost:1337'}${
-      formats?.large?.url || formats?.medium?.url || formats?.small?.url || image.url
-    }`;
+    
+    // Server-side: use internal Docker hostname
+    if (typeof window === 'undefined') {
+      const internalUrl = process.env.STRAPI_URL || process.env.STRAPI_INTERNAL_URL || 'http://cms:1337/api';
+      const baseUrl = internalUrl.replace('/api', '');
+      return `${baseUrl}${formats?.large?.url || formats?.medium?.url || formats?.small?.url || image.url}`;
+    }
+    
+    // Client-side: use public URL
+    const baseUrl = getStrapiURL().replace('/api', '');
+    return `${baseUrl}${formats?.large?.url || formats?.medium?.url || formats?.small?.url || image.url}`;
   };
 
   const formatPrice = (price: number) => {

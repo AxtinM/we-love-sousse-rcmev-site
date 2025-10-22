@@ -8,6 +8,7 @@ import AnimatedCounter from '@/components/AnimatedCounter';
 import ImmersiveHeroSection from '@/components/ImmersiveHeroSection';
 import VideoSection from '@/components/VideoSection';
 import ArticlesSection from '@/components/ArticlesSection';
+import AnnouncementsSection from '@/components/AnnouncementsSection';
 import ProductsSection from '@/components/ProductsSection';
 import PartnersShowcase from '@/components/PartnersShowcase';
 import ContactSection from '@/components/ContactSection';
@@ -533,6 +534,9 @@ export default function ImmersiveHome() {
 
       {/* Articles Section */}
       <ArticlesSection />
+
+      {/* Announcements Section */}
+      <AnnouncementsSection />
 
       {/* Products Section */}
       <ProductsSection />

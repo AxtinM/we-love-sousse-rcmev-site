@@ -49,7 +49,7 @@ const categoryLabels = {
   concours: 'Concours d\'Innovation'
 };
 
-export default function ImmersiveVideoSection() {
+export default function VideoSection() {
   const [selectedVideo, setSelectedVideo] = useState(videos[0]);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
@@ -58,7 +58,7 @@ export default function ImmersiveVideoSection() {
     : videos.filter(video => video.category === selectedCategory);
 
   return (
-    <div className="relative bg-gradient-to-br from-slate-900 via-emerald-900 to-teal-900 py-16 lg:py-24">
+    <div id="videos" className="relative bg-gradient-to-br from-slate-900 via-emerald-900 to-teal-900 py-16 lg:py-24">
       <div className="container mx-auto px-4">
         {/* Section Title */}
         <motion.div

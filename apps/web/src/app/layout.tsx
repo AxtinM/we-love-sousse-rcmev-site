@@ -40,7 +40,7 @@ export default function RootLayout({
         className={`${inter.variable} ${poppins.variable} font-sans antialiased`}
       >
         <Providers>
-          <main>{children}</main>
+          {children}
         </Providers>
       </body>
     </html>

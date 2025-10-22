@@ -35,7 +35,7 @@ export default function ProjetPage() {
     },
     {
       title: 'Activités Communautaires',
-      image: '/images/project-activities/activité atdef.jpg',
+      image: '/images/project-activities/activite-atdef.jpg',
       description: 'Activités de terrain menées par nos partenaires régionaux dans différentes gouvernorats.'
     },
     {

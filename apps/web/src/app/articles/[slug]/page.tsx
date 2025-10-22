@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import Image from 'next/image';
+import ReactMarkdown from 'react-markdown';
 import { CalendarDaysIcon, ChevronLeftIcon, ClockIcon } from '@heroicons/react/24/outline';
 
 interface Article {
@@ -134,10 +136,13 @@ export default function ArticlePage() {
       <section className="relative">
         {imageUrl && (
           <div className="h-96 lg:h-[500px] relative overflow-hidden">
-            <img
+            <Image
               src={imageUrl}
               alt={article.coverImage?.alternativeText || article.title}
-              className="w-full h-full object-cover"
+              fill
+              className="object-cover"
+              priority
+              sizes="100vw"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
           </div>
@@ -186,21 +191,47 @@ export default function ArticlePage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="prose prose-lg max-w-none"
+            className="prose prose-lg lg:prose-xl max-w-none
+              prose-headings:font-poppins prose-headings:text-gray-900 prose-headings:font-bold
+              prose-h1:text-4xl prose-h1:mb-6 prose-h1:mt-8
+              prose-h2:text-3xl prose-h2:mb-4 prose-h2:mt-8
+              prose-h3:text-2xl prose-h3:mb-3 prose-h3:mt-6
+              prose-p:text-gray-700 prose-p:leading-relaxed prose-p:mb-6 prose-p:font-inter
+              prose-strong:text-gray-900 prose-strong:font-semibold
+              prose-em:text-gray-800 prose-em:italic
+              prose-ul:my-6 prose-ul:list-disc prose-ul:pl-6
+              prose-ol:my-6 prose-ol:list-decimal prose-ol:pl-6
+              prose-li:text-gray-700 prose-li:my-2 prose-li:leading-relaxed
+              prose-blockquote:border-l-4 prose-blockquote:border-emerald-500 prose-blockquote:pl-6 prose-blockquote:py-4 prose-blockquote:my-6 prose-blockquote:bg-emerald-50/50 prose-blockquote:rounded-r-lg
+              prose-blockquote:text-gray-700 prose-blockquote:italic
+              prose-a:text-emerald-600 prose-a:no-underline prose-a:font-medium hover:prose-a:text-emerald-700 hover:prose-a:underline
+              prose-code:text-emerald-600 prose-code:bg-gray-100 prose-code:px-2 prose-code:py-1 prose-code:rounded prose-code:text-sm
+              prose-pre:bg-gray-900 prose-pre:text-gray-100 prose-pre:rounded-xl prose-pre:p-6 prose-pre:my-6
+              prose-img:rounded-2xl prose-img:shadow-lg prose-img:my-8"
           >
             {article.excerpt && (
-              <div className="text-xl text-gray-600 font-medium leading-relaxed mb-8 p-6 bg-blue-50 rounded-2xl border-l-4 border-blue-500">
+              <div className="text-xl text-gray-600 font-medium leading-relaxed mb-8 p-6 bg-emerald-50 rounded-2xl border-l-4 border-emerald-500 not-prose">
                 {article.excerpt}
               </div>
             )}
             
             {article.content ? (
-              <div 
-                className="text-gray-800 leading-relaxed"
-                dangerouslySetInnerHTML={{ __html: article.content }}
-              />
+              <ReactMarkdown
+                components={{
+                  // Custom rendering for images to use Next.js Image component
+                  img: ({ node, ...props }) => (
+                    <img
+                      {...props}
+                      className="rounded-2xl shadow-lg my-8 w-full"
+                      loading="lazy"
+                    />
+                  ),
+                }}
+              >
+                {article.content}
+              </ReactMarkdown>
             ) : (
-              <div className="text-gray-600 text-center py-8">
+              <div className="text-gray-600 text-center py-8 not-prose">
                 <p>Le contenu de cet article sera bientôt disponible.</p>
               </div>
             )}

@@ -8,6 +8,7 @@ import AnimatedCounter from '@/components/AnimatedCounter';
 import ImmersiveHeroSection from '@/components/ImmersiveHeroSection';
 import VideoSection from '@/components/VideoSection';
 import ArticlesSection from '@/components/ArticlesSection';
+import ProductsSection from '@/components/ProductsSection';
 import PartnersShowcase from '@/components/PartnersShowcase';
 import ContactSection from '@/components/ContactSection';
 
@@ -459,7 +460,7 @@ export default function ImmersiveHome() {
               className="relative h-32 rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow group"
             >
               <Image
-                src="/images/project-activities/activité atdef.jpg"
+                src="/images/project-activities/activite-atdef.jpg"
                 alt="Activité ATDEF"
                 fill
                 className="object-cover group-hover:scale-105 transition-transform duration-300"
@@ -532,6 +533,9 @@ export default function ImmersiveHome() {
 
       {/* Articles Section */}
       <ArticlesSection />
+
+      {/* Products Section */}
+      <ProductsSection />
 
       {/* Transition Section - Responsive */}
       <div className="h-16 sm:h-20 lg:h-24 bg-gradient-to-b from-emerald-50/30 to-slate-900"></div>

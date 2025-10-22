@@ -4,8 +4,10 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
+import ReactMarkdown from 'react-markdown';
 import { ArrowLeftIcon, ShoppingBagIcon, MapPinIcon, TagIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
+import ContactModal from '@/components/ContactModal';
 
 interface Product {
   id: number;
@@ -51,21 +53,31 @@ const categoryColors = {
   'jewelry': 'from-yellow-500 to-amber-500'
 };
 
-export default function ProductDetailPage({ params }: { params: { slug: string } }) {
+export default function ProductDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const [product, setProduct] = useState<Product | null>(null);
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [slug, setSlug] = useState<string>('');
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
 
   useEffect(() => {
-    fetchProduct();
-  }, [params.slug]);
+    params.then((resolvedParams) => {
+      setSlug(resolvedParams.slug);
+    });
+  }, [params]);
+
+  useEffect(() => {
+    if (slug) {
+      fetchProduct();
+    }
+  }, [slug]);
 
   const fetchProduct = async () => {
     setLoading(true);
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_STRAPI_URL}/products?filters[slug][$eq]=${params.slug}&populate=*`
+        `${process.env.NEXT_PUBLIC_STRAPI_URL}/products?filters[slug][$eq]=${slug}&populate=*`
       );
       
       if (response.ok) {
@@ -330,7 +342,16 @@ export default function ProductDetailPage({ params }: { params: { slug: string }
               {product.description && (
                 <div className="bg-white/60 backdrop-blur-sm rounded-xl p-4 sm:p-6 border border-gray-200">
                   <h3 className="font-poppins font-semibold text-gray-900 mb-3">Description</h3>
-                  <p className="text-gray-700 font-inter leading-relaxed">{product.description}</p>
+                  <div className="text-gray-700 font-inter leading-relaxed prose prose-sm sm:prose max-w-none
+                    prose-headings:font-poppins prose-headings:text-gray-900 
+                    prose-p:text-gray-700 prose-p:my-2
+                    prose-strong:text-gray-900 prose-strong:font-semibold
+                    prose-ul:my-2 prose-ul:list-disc prose-ul:list-inside
+                    prose-ol:my-2 prose-ol:list-decimal prose-ol:list-inside
+                    prose-li:text-gray-700 prose-li:my-1
+                    prose-a:text-emerald-600 prose-a:no-underline hover:prose-a:underline">
+                    <ReactMarkdown>{product.description}</ReactMarkdown>
+                  </div>
                 </div>
               )}
               
@@ -338,17 +359,24 @@ export default function ProductDetailPage({ params }: { params: { slug: string }
               <div className="bg-gradient-to-r from-emerald-500 to-teal-600 rounded-xl p-6 text-white">
                 <h3 className="font-poppins font-semibold text-lg mb-2">Intéressé par ce produit ?</h3>
                 <p className="font-inter text-emerald-100 mb-4">Contactez-nous pour plus d&apos;informations ou pour passer commande.</p>
-                <Link
-                  href="/contact"
+                <button
+                  onClick={() => setIsContactModalOpen(true)}
                   className="inline-flex items-center bg-white text-emerald-600 px-6 py-3 rounded-lg font-poppins font-medium hover:bg-emerald-50 transition-colors"
                 >
                   Nous contacter
-                </Link>
+                </button>
               </div>
             </motion.div>
           </div>
         </div>
       </section>
+
+      {/* Contact Modal */}
+      <ContactModal 
+        isOpen={isContactModalOpen} 
+        onClose={() => setIsContactModalOpen(false)}
+        productName={product?.name}
+      />
 
       {/* Related Products */}
       {relatedProducts.length > 0 && (

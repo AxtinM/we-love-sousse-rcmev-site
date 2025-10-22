@@ -3,6 +3,14 @@
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
+import { 
+  ChartBarIcon, 
+  PlayCircleIcon, 
+  UsersIcon, 
+  EnvelopeIcon,
+  ArrowRightIcon,
+  SparklesIcon 
+} from '@heroicons/react/24/outline';
 
 export default function ImmersiveHeroSection() {
   const [mounted, setMounted] = useState(false);
@@ -33,7 +41,7 @@ export default function ImmersiveHeroSection() {
       {/* Background Image */}
       <div className="absolute inset-0">
         <Image
-          src="/images/project-activities/activité atdef.jpg"
+          src="/images/project-activities/activite-atdef.jpg"
           alt="We Love Sousse Project Activities"
           fill
           className="object-cover"
@@ -120,63 +128,93 @@ export default function ImmersiveHeroSection() {
           </div>
         </motion.div>
 
-        {/* Animated Call-to-Action - Responsive design */}
+        {/* Animated Call-to-Action - Enhanced with icons and better design */}
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.6 }}
-          className="flex flex-col sm:flex-row gap-3 lg:gap-4 justify-center items-center relative z-20 mb-3 sm:mb-4"
+          className="flex flex-col sm:flex-row gap-4 lg:gap-5 justify-center items-center relative z-20 mb-6 sm:mb-8"
         >
+          {/* Primary CTA - Impact Stats */}
           <motion.button
             onClick={() => scrollToSection('statistics')}
-            whileHover={{ scale: 1.05, boxShadow: '0 20px 40px rgba(6, 182, 212, 0.4)' }}
+            whileHover={{ scale: 1.08, y: -3 }}
             whileTap={{ scale: 0.95 }}
-            className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-5 sm:px-6 py-2.5 sm:py-3 rounded-full font-poppins font-medium text-sm shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer relative z-30 backdrop-blur-sm border border-cyan-400/20 w-full sm:w-auto"
+            className="group relative overflow-hidden bg-gradient-to-r from-cyan-500 via-blue-600 to-blue-700 text-white px-7 sm:px-8 py-4 sm:py-4.5 rounded-2xl font-poppins font-semibold text-base shadow-2xl hover:shadow-cyan-500/50 transition-all duration-300 cursor-pointer backdrop-blur-sm border border-cyan-400/30 w-full sm:w-auto"
           >
-            Découvrir Notre Impact
+            {/* Shine effect */}
+            <motion.div
+              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+              initial={{ x: '-100%' }}
+              whileHover={{ x: '100%' }}
+              transition={{ duration: 0.6 }}
+            />
+            
+            <span className="relative flex items-center justify-center gap-2.5">
+              <ChartBarIcon className="w-6 h-6 group-hover:scale-110 transition-transform" />
+              <span>Découvrir Notre Impact</span>
+              <ArrowRightIcon className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            </span>
+            
+            {/* Glow effect */}
+            <div className="absolute inset-0 rounded-2xl bg-cyan-400/0 group-hover:bg-cyan-400/20 blur-xl transition-all duration-300" />
           </motion.button>
           
+          {/* Secondary CTA - Videos */}
           <motion.button
-            onClick={() => {
-              // Scroll to the start of the video section (after hero + statistics)
-              const heroHeight = window.innerHeight;
-              const statsHeight = window.innerHeight;
-              window.scrollTo({ 
-                top: heroHeight + statsHeight, 
-                behavior: 'smooth' 
-              });
-            }}
-            whileHover={{ scale: 1.05, boxShadow: '0 20px 40px rgba(16, 185, 129, 0.4)' }}
+            onClick={() => scrollToSection('videos')}
+            whileHover={{ scale: 1.08, y: -3 }}
             whileTap={{ scale: 0.95 }}
-            className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-5 sm:px-6 py-2.5 sm:py-3 rounded-full font-poppins font-medium text-sm shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer relative z-30 backdrop-blur-sm border border-emerald-400/20 w-full sm:w-auto"
+            className="group relative overflow-hidden bg-gradient-to-r from-emerald-500 via-teal-600 to-green-600 text-white px-7 sm:px-8 py-4 sm:py-4.5 rounded-2xl font-poppins font-semibold text-base shadow-2xl hover:shadow-emerald-500/50 transition-all duration-300 cursor-pointer backdrop-blur-sm border border-emerald-400/30 w-full sm:w-auto"
           >
-            Voir nos Vidéos
+            {/* Shine effect */}
+            <motion.div
+              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+              initial={{ x: '-100%' }}
+              whileHover={{ x: '100%' }}
+              transition={{ duration: 0.6 }}
+            />
+            
+            <span className="relative flex items-center justify-center gap-2.5">
+              <PlayCircleIcon className="w-6 h-6 group-hover:scale-110 transition-transform" />
+              <span>Voir Nos Vidéos</span>
+              <SparklesIcon className="w-5 h-5 group-hover:rotate-12 transition-transform" />
+            </span>
+            
+            {/* Glow effect */}
+            <div className="absolute inset-0 rounded-2xl bg-emerald-400/0 group-hover:bg-emerald-400/20 blur-xl transition-all duration-300" />
           </motion.button>
         </motion.div>
 
-        {/* Secondary Actions - Responsive */}
+        {/* Secondary Actions - Enhanced with better styling */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.8 }}
-          className="flex flex-col sm:flex-row gap-2 lg:gap-3 justify-center items-center relative z-20"
+          className="flex flex-col sm:flex-row gap-3 lg:gap-4 justify-center items-center relative z-20"
         >
           <motion.button
             onClick={() => scrollToSection('partners')}
-            whileHover={{ scale: 1.05, backgroundColor: 'rgba(255, 255, 255, 0.15)' }}
+            whileHover={{ scale: 1.05, backgroundColor: 'rgba(255, 255, 255, 0.12)' }}
             whileTap={{ scale: 0.95 }}
-            className="border-2 border-slate-300/40 text-slate-200 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full font-poppins font-medium text-xs hover:border-slate-200 hover:text-white transition-all duration-300 backdrop-blur-md cursor-pointer relative z-30 w-full sm:w-auto"
+            className="group relative border-2 border-white/30 text-white px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl font-poppins font-medium text-sm hover:border-white/60 hover:bg-white/10 transition-all duration-300 backdrop-blur-md cursor-pointer w-full sm:w-auto"
           >
-            Nos Partenaires
+            <span className="flex items-center justify-center gap-2">
+              <UsersIcon className="w-5 h-5 group-hover:scale-110 transition-transform" />
+              <span>Nos Partenaires</span>
+            </span>
           </motion.button>
 
           <motion.button
             onClick={() => scrollToSection('contact')}
-            whileHover={{ scale: 1.05, boxShadow: '0 15px 30px rgba(16, 185, 129, 0.3)' }}
+            whileHover={{ scale: 1.05, y: -2 }}
             whileTap={{ scale: 0.95 }}
-            className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-full font-poppins font-medium text-xs shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer relative z-30 backdrop-blur-sm border border-emerald-400/20 w-full sm:w-auto"
+            className="group relative bg-white/10 backdrop-blur-md border-2 border-emerald-400/40 text-white px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl font-poppins font-medium text-sm hover:bg-emerald-500/20 hover:border-emerald-400/60 shadow-lg hover:shadow-emerald-500/30 transition-all duration-300 cursor-pointer w-full sm:w-auto"
           >
-            Nous Contacter
+            <span className="flex items-center justify-center gap-2">
+              <EnvelopeIcon className="w-5 h-5 group-hover:scale-110 transition-transform" />
+              <span>Nous Contacter</span>
+            </span>
           </motion.button>
         </motion.div>
 

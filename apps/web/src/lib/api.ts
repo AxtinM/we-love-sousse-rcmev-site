@@ -38,9 +38,20 @@ interface StrapiAttributes {
 }
 
 // Content Type Interfaces
+export type PublicationType = 
+  | 'article' 
+  | 'scientifique' 
+  | 'rapport' 
+  | 'compte-rendu' 
+  | 'newsletter' 
+  | 'cartographie' 
+  | 'document' 
+  | 'actualite';
+
 export interface Article extends StrapiAttributes {
   title: string;
   slug: string;
+  publicationType: PublicationType;
   excerpt?: string;
   content?: string;
   coverImage?: {
@@ -60,6 +71,24 @@ export interface Article extends StrapiAttributes {
           url: string;
           alternativeText?: string;
         };
+      };
+    };
+  };
+}
+
+export interface PressCoverage extends StrapiAttributes {
+  title: string;
+  source?: string;
+  url: string;
+  displayType: 'embed' | 'link';
+  excerpt?: string;
+  publishedDate?: string;
+  order: number;
+  thumbnail?: {
+    data?: {
+      attributes: {
+        url: string;
+        alternativeText?: string;
       };
     };
   };
@@ -110,9 +139,10 @@ async function fetchAPI<T>(endpoint: string, options: RequestInit = {}): Promise
 }
 
 // Content fetching functions
-export async function getArticles(): Promise<Article[]> {
+export async function getArticles(type?: PublicationType): Promise<Article[]> {
   try {
-    const response = await fetchAPI<StrapiResponse<Article[]>>('/articles?populate=*&sort=publishedAt:desc');
+    const typeFilter = type ? `&filters[publicationType][$eq]=${type}` : '';
+    const response = await fetchAPI<StrapiResponse<Article[]>>(`/articles?populate=*&sort=publishedAt:desc${typeFilter}`);
     return response.data || [];
   } catch (error) {
     console.warn('Failed to fetch articles:', error);
@@ -127,6 +157,16 @@ export async function getArticleBySlug(slug: string): Promise<Article | null> {
   } catch (error) {
     console.warn('Failed to fetch article by slug:', error);
     return null;
+  }
+}
+
+export async function getPressCoverage(): Promise<PressCoverage[]> {
+  try {
+    const response = await fetchAPI<StrapiResponse<PressCoverage[]>>('/press-coverages?populate=*&sort=order:asc');
+    return response.data || [];
+  } catch (error) {
+    console.warn('Failed to fetch press coverage:', error);
+    return [];
   }
 }
 

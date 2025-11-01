@@ -58,49 +58,34 @@ export default function VideoSection() {
     : videos.filter(video => video.category === selectedCategory);
 
   return (
-    <div id="videos" className="relative bg-gradient-to-br from-slate-900 via-emerald-900 to-teal-900 py-16 lg:py-24">
+    <div className="relative">
       <div className="container mx-auto px-4">
-        {/* Section Title */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="text-center mb-12"
-        >
-          <h2 className="text-4xl lg:text-6xl font-bold text-white mb-6">
-            Nos Vidéos
-          </h2>
-          <p className="text-xl text-gray-300 max-w-3xl mx-auto mb-8">
-            Découvrez notre travail à travers nos conférences, formations et concours d'innovation sociale
-          </p>
-          
-          {/* Category Filter */}
-          <div className="flex flex-wrap justify-center gap-4 mb-8">
+        {/* Category Filter */}
+        <div className="flex flex-wrap justify-center gap-4 mb-12">
+          <button
+            onClick={() => setSelectedCategory('all')}
+            className={`px-6 py-2 rounded-full font-medium transition-all duration-300 ${
+              selectedCategory === 'all'
+                ? 'bg-emerald-500 text-white'
+                : 'bg-white/20 text-white hover:bg-white/30'
+            }`}
+          >
+            Toutes les vidéos
+          </button>
+          {Object.entries(categoryLabels).map(([key, label]) => (
             <button
-              onClick={() => setSelectedCategory('all')}
+              key={key}
+              onClick={() => setSelectedCategory(key)}
               className={`px-6 py-2 rounded-full font-medium transition-all duration-300 ${
-                selectedCategory === 'all'
+                selectedCategory === key
                   ? 'bg-emerald-500 text-white'
                   : 'bg-white/20 text-white hover:bg-white/30'
               }`}
             >
-              Toutes les vidéos
+              {label}
             </button>
-            {Object.entries(categoryLabels).map(([key, label]) => (
-              <button
-                key={key}
-                onClick={() => setSelectedCategory(key)}
-                className={`px-6 py-2 rounded-full font-medium transition-all duration-300 ${
-                  selectedCategory === key
-                    ? 'bg-emerald-500 text-white'
-                    : 'bg-white/20 text-white hover:bg-white/30'
-                }`}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-        </motion.div>
+          ))}
+        </div>
 
         {/* Main Video Player */}
         <motion.div

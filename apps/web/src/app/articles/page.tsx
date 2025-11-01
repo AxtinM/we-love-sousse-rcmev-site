@@ -5,78 +5,90 @@ import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { ChevronRightIcon, CalendarDaysIcon, MagnifyingGlassIcon, ArrowLeftIcon, EyeIcon } from '@heroicons/react/24/outline';
 import Image from 'next/image';
+import { getArticles, getStrapiMediaUrl, type Article, type PublicationType } from '@/lib/api';
 
-interface Article {
-  id: number;
-  documentId: string;
-  title: string;
-  slug: string;
-  excerpt: string;
-  content: string;
-  publishedAt: string;
-  createdAt: string;
-  updatedAt: string;
-  coverImage: {
-    id: number;
-    url: string;
-    alternativeText: string;
-    formats: {
-      large?: { url: string };
-      medium?: { url: string };
-      small?: { url: string };
-      thumbnail?: { url: string };
-    };
-  };
-}
+const PUBLICATION_TYPES: { value: PublicationType | 'all'; label: string }[] = [
+  { value: 'all', label: 'Tous' },
+  { value: 'article', label: 'Articles' },
+  { value: 'scientifique', label: 'Scientifique' },
+  { value: 'rapport', label: 'Rapports' },
+  { value: 'compte-rendu', label: 'Comptes-rendus' },
+  { value: 'newsletter', label: 'Newsletters' },
+  { value: 'cartographie', label: 'Cartographies' },
+  { value: 'document', label: 'Documents' },
+  { value: 'actualite', label: 'Actualités' }
+];
 
-interface ArticlesResponse {
-  data: Article[];
-  meta: {
-    pagination: {
-      page: number;
-      pageSize: number;
-      pageCount: number;
-      total: number;
-    };
+const getPublicationTypeColor = (type: PublicationType): string => {
+  const colors: Record<PublicationType, string> = {
+    article: 'bg-emerald-100 text-emerald-800',
+    scientifique: 'bg-blue-100 text-blue-800',
+    rapport: 'bg-purple-100 text-purple-800',
+    'compte-rendu': 'bg-orange-100 text-orange-800',
+    newsletter: 'bg-pink-100 text-pink-800',
+    cartographie: 'bg-teal-100 text-teal-800',
+    document: 'bg-gray-100 text-gray-800',
+    actualite: 'bg-cyan-100 text-cyan-800'
   };
-}
+  return colors[type] || 'bg-gray-100 text-gray-800';
+};
+
+const getPublicationTypeLabel = (type: PublicationType): string => {
+  const labels: Record<PublicationType, string> = {
+    article: 'Article',
+    scientifique: 'Scientifique',
+    rapport: 'Rapport',
+    'compte-rendu': 'Compte-rendu',
+    newsletter: 'Newsletter',
+    cartographie: 'Cartographie',
+    document: 'Document',
+    actualite: 'Actualité'
+  };
+  return labels[type] || 'Article';
+};
 
 export default function ArticlesPage() {
-  const [articles, setArticles] = useState<Article[]>([]);
+  const [publications, setPublications] = useState<Article[]>([]);
+  const [filteredPublications, setFilteredPublications] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedType, setSelectedType] = useState<PublicationType | 'all'>('all');
   const [currentPage, setCurrentPage] = useState(1);
-  const [pagination, setPagination] = useState({
-    page: 1,
-    pageSize: 12,
-    pageCount: 1,
-    total: 0
-  });
+  const itemsPerPage = 12;
 
   useEffect(() => {
-    fetchArticles(currentPage, searchTerm);
-  }, [currentPage, searchTerm]);
+    fetchPublications();
+  }, [selectedType]);
 
-  const fetchArticles = async (page: number, search: string = '') => {
+  useEffect(() => {
+    applyFilters();
+  }, [publications, searchTerm]);
+
+  const fetchPublications = async () => {
     setLoading(true);
     try {
-      let url = `${process.env.NEXT_PUBLIC_STRAPI_URL}/articles?populate=*&pagination[page]=${page}&pagination[pageSize]=12&sort=publishedAt:desc`;
-      
-      if (search) {
-        url += `&filters[title][$containsi]=${encodeURIComponent(search)}`;
-      }
-
-      const response = await fetch(url);
-      if (response.ok) {
-        const data: ArticlesResponse = await response.json();
-        setArticles(data.data);
-        setPagination(data.meta.pagination);
-      }
+      const data = await getArticles(selectedType === 'all' ? undefined : selectedType);
+      setPublications(data);
     } catch (error) {
-      console.error('Error fetching articles:', error);
+      console.error('Error fetching publications:', error);
+      setPublications([]);
     } finally {
       setLoading(false);
     }
+  };
+
+  const applyFilters = () => {
+    let filtered = [...publications];
+
+    if (searchTerm) {
+      filtered = filtered.filter(pub =>
+        pub.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        pub.excerpt?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    setFilteredPublications(filtered);
+    setCurrentPage(1);
   };
 
   const formatDate = (dateString: string) => {
@@ -87,20 +99,15 @@ export default function ArticlesPage() {
     });
   };
 
-  const getImageUrl = (article: Article) => {
-    if (!article.coverImage) return '/images/default-article.jpg';
-    
-    const formats = article.coverImage.formats;
-    return `${process.env.NEXT_PUBLIC_STRAPI_URL?.replace('/api', '') || 'http://localhost:1337'}${
-      formats.medium?.url || formats.large?.url || formats.small?.url || article.coverImage.url
-    }`;
-  };
-
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    setCurrentPage(1);
-    fetchArticles(1, searchTerm);
+    applyFilters();
   };
+
+  // Pagination
+  const totalPages = Math.ceil(filteredPublications.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedPublications = filteredPublications.slice(startIndex, startIndex + itemsPerPage);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-emerald-50">
@@ -119,7 +126,7 @@ export default function ArticlesPage() {
 
       {/* Hero Section */}
       <section className="relative py-20 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-900 via-teal-800 to-emerald-700" />
+        <div className="absolute inset-0 bg-gradient-to-br from-emerald-900 via-teal-800 to-cyan-700" />
         <div className="absolute inset-0 bg-black/20" />
         
         {/* Background pattern */}
@@ -138,10 +145,10 @@ export default function ArticlesPage() {
             className="max-w-4xl mx-auto"
           >
             <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
-              Nos Articles
+              Nos Publications
             </h1>
             <p className="text-xl md:text-2xl mb-8 text-blue-100 font-light">
-              Découvrez nos dernières initiatives, recherches et témoignages
+              Découvrez nos articles, recherches, rapports et autres ressources documentaires
             </p>
             
             {/* Search Bar */}
@@ -155,7 +162,7 @@ export default function ArticlesPage() {
               <div className="relative">
                 <input
                   type="text"
-                  placeholder="Rechercher un article..."
+                  placeholder="Rechercher une publication..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full px-6 py-4 pl-14 rounded-2xl text-gray-900 bg-white/95 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 shadow-lg text-lg"
@@ -173,7 +180,28 @@ export default function ArticlesPage() {
         </div>
       </section>
 
-      {/* Articles Grid */}
+      {/* Filter Tabs */}
+      <section className="py-8 bg-white border-b border-gray-200">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-wrap justify-center gap-2 sm:gap-3">
+            {PUBLICATION_TYPES.map((type) => (
+              <button
+                key={type.value}
+                onClick={() => setSelectedType(type.value)}
+                className={`px-4 sm:px-6 py-2 sm:py-3 rounded-full font-medium text-sm sm:text-base transition-all duration-300 transform hover:scale-105 ${
+                  selectedType === type.value
+                    ? 'bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 text-white shadow-lg'
+                    : 'bg-white text-gray-700 hover:bg-emerald-50 shadow-md border border-gray-200'
+                }`}
+              >
+                {type.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Publications Grid */}
       <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
           {loading ? (
@@ -190,7 +218,7 @@ export default function ArticlesPage() {
                 </div>
               ))}
             </div>
-          ) : articles.length === 0 ? (
+          ) : filteredPublications.length === 0 ? (
             <motion.div 
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
@@ -199,16 +227,20 @@ export default function ArticlesPage() {
               <div className="bg-gray-100 rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-6">
                 <MagnifyingGlassIcon className="h-12 w-12 text-gray-400" />
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">Aucun article trouvé</h3>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">Aucune publication trouvée</h3>
               <p className="text-gray-600 max-w-md mx-auto">
-                {searchTerm ? 'Essayez avec d\'autres mots-clés ou parcourez tous nos articles' : 'Aucun article n\'est disponible pour le moment'}
+                {searchTerm ? 'Essayez avec d\'autres mots-clés ou parcourez toutes nos publications' : 'Aucune publication n\'est disponible pour le moment'}
               </p>
-              {searchTerm && (
+              {(searchTerm || selectedType !== 'all') && (
                 <button
-                  onClick={() => {setSearchTerm(''); setCurrentPage(1); fetchArticles(1, '');}}
-                  className="mt-6 bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition-colors font-medium"
+                  onClick={() => {
+                    setSearchTerm('');
+                    setSelectedType('all');
+                    setCurrentPage(1);
+                  }}
+                  className="mt-6 bg-emerald-600 text-white px-6 py-3 rounded-xl hover:bg-emerald-700 transition-colors font-medium"
                 >
-                  Voir tous les articles
+                  Voir toutes les publications
                 </button>
               )}
             </motion.div>
@@ -224,58 +256,58 @@ export default function ArticlesPage() {
                   {searchTerm ? (
                     <>Résultats pour "<span className="font-semibold text-gray-900">{searchTerm}</span>" • </>
                   ) : null}
-                  <span className="font-semibold">{pagination.total}</span> article{pagination.total > 1 ? 's' : ''} trouvé{pagination.total > 1 ? 's' : ''}
+                  <span className="font-semibold">{filteredPublications.length}</span> publication{filteredPublications.length > 1 ? 's' : ''} trouvée{filteredPublications.length > 1 ? 's' : ''}
                 </p>
               </motion.div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {articles.map((article, index) => (
+                {paginatedPublications.map((publication, index) => (
                   <motion.article
-                    key={article.id}
+                    key={publication.id}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, delay: index * 0.1 }}
                     className="group"
                   >
-                    <Link href={`/articles/${article.slug}`}>
+                    <Link href={`/articles/${publication.slug}`}>
                       <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
                         <div className="relative h-56 overflow-hidden">
-                          {article.coverImage ? (
+                          {publication.coverImage?.data?.attributes?.url ? (
                             <Image
-                              src={getImageUrl(article)}
-                              alt={article.coverImage?.alternativeText || article.title}
+                              src={getStrapiMediaUrl(publication.coverImage.data.attributes.url)}
+                              alt={publication.coverImage.data.attributes.alternativeText || publication.title}
                               fill
                               className="object-cover transition-transform duration-300 group-hover:scale-110"
                             />
                           ) : (
-                            <div className="w-full h-full bg-gradient-to-br from-blue-500 to-emerald-500 flex items-center justify-center">
+                            <div className="w-full h-full bg-gradient-to-br from-emerald-500 to-cyan-500 flex items-center justify-center">
                               <EyeIcon className="w-16 h-16 text-white/60" />
                             </div>
                           )}
                           <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                          <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 text-xs font-medium text-gray-700">
-                            Article
+                          <div className={`absolute top-4 left-4 backdrop-blur-sm rounded-full px-3 py-1 text-xs font-medium ${getPublicationTypeColor(publication.publicationType)}`}>
+                            {getPublicationTypeLabel(publication.publicationType)}
                           </div>
                         </div>
                         
                         <div className="p-6">
                           <div className="flex items-center text-sm text-gray-500 mb-3">
-                            <CalendarDaysIcon className="h-4 w-4 mr-2" />
-                            {formatDate(article.publishedAt)}
+                            <CalendarDaysIcon className="h-4 w-4 mr-2 text-emerald-500" />
+                            {publication.publishedAt ? formatDate(publication.publishedAt) : formatDate(publication.createdAt)}
                           </div>
                           
-                          <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors duration-300 line-clamp-2 leading-tight">
-                            {article.title}
+                          <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-emerald-600 transition-colors duration-300 line-clamp-2 leading-tight">
+                            {publication.title}
                           </h3>
                           
-                          {article.excerpt && (
+                          {publication.excerpt && (
                             <p className="text-gray-600 mb-4 line-clamp-3 text-sm leading-relaxed">
-                              {article.excerpt}
+                              {publication.excerpt}
                             </p>
                           )}
                           
                           <div className="flex items-center justify-between">
-                            <div className="flex items-center text-blue-600 font-medium group-hover:text-blue-700 transition-colors duration-300">
+                            <div className="flex items-center text-emerald-600 font-medium group-hover:text-emerald-700 transition-colors duration-300">
                               Lire la suite
                               <ChevronRightIcon className="h-4 w-4 ml-2 transition-transform duration-300 group-hover:translate-x-1" />
                             </div>
@@ -289,23 +321,23 @@ export default function ArticlesPage() {
               </div>
 
               {/* Pagination */}
-              {pagination.pageCount > 1 && (
+              {totalPages > 1 && (
                 <div className="flex justify-center items-center space-x-2 mt-16">
                   <button
                     onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                     disabled={currentPage === 1}
-                    className="px-4 py-2 bg-white border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                    className="px-4 py-2 bg-white border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
                   >
                     Précédent
                   </button>
                   
-                  {[...Array(pagination.pageCount)].map((_, i) => (
+                  {[...Array(totalPages)].map((_, i) => (
                     <button
                       key={i + 1}
                       onClick={() => setCurrentPage(i + 1)}
-                      className={`px-4 py-2 rounded-lg ${
+                      className={`px-4 py-2 rounded-lg transition-colors ${
                         currentPage === i + 1
-                          ? 'bg-blue-600 text-white'
+                          ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white'
                           : 'bg-white border border-gray-300 hover:bg-gray-50'
                       }`}
                     >
@@ -314,10 +346,10 @@ export default function ArticlesPage() {
                   ))}
                   
                   <button
-                    onClick={() => setCurrentPage(Math.min(pagination.pageCount, currentPage + 1))}
-                    disabled={currentPage === pagination.pageCount}
-                    className="px-4 py-2 bg-white border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
-                    >
+                    onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                    disabled={currentPage === totalPages}
+                    className="px-4 py-2 bg-white border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
+                  >
                     Suivant
                   </button>
                 </div>

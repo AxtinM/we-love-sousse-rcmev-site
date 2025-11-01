@@ -4,8 +4,8 @@
   "info": {
     "singularName": "article",
     "pluralName": "articles",
-    "displayName": "Article",
-    "description": ""
+    "displayName": "Publication",
+    "description": "Articles, rapports, documents et autres publications"
   },
   "options": {
     "draftAndPublish": true
@@ -19,6 +19,21 @@
     "slug": {
       "type": "uid",
       "targetField": "title",
+      "required": true
+    },
+    "publicationType": {
+      "type": "enumeration",
+      "enum": [
+        "article",
+        "scientifique",
+        "rapport",
+        "compte-rendu",
+        "newsletter",
+        "cartographie",
+        "document",
+        "actualite"
+      ],
+      "default": "article",
       "required": true
     },
     "coverImage": {

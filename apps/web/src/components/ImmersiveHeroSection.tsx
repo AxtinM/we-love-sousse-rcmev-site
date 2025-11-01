@@ -3,13 +3,13 @@
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { 
-  ChartBarIcon, 
-  PlayCircleIcon, 
-  UsersIcon, 
+import {
+  ChartBarIcon,
+  PlayCircleIcon,
+  UsersIcon,
   EnvelopeIcon,
   ArrowRightIcon,
-  SparklesIcon 
+  SparklesIcon
 } from '@heroicons/react/24/outline';
 
 export default function ImmersiveHeroSection() {
@@ -18,14 +18,14 @@ export default function ImmersiveHeroSection() {
 
   useEffect(() => {
     setMounted(true);
-    
+
     // Generate particles only on client side to avoid hydration mismatch
     const generatedParticles = Array.from({ length: 30 }, () => ({
       x: Math.random() * 1200,
       y: Math.random() * 800,
       duration: Math.random() * 20 + 15,
     }));
-    
+
     setParticles(generatedParticles);
   }, []);
 
@@ -118,13 +118,30 @@ export default function ImmersiveHeroSection() {
             Réponse Coordonnée à la Montée de l'Extrémisme Violent
           </h2>
           <p className="text-sm sm:text-base lg:text-lg font-inter text-slate-300 max-w-3xl mx-auto leading-relaxed font-light">
-            Plus d&apos;une décennie d&apos;engagement pour renforcer la résilience des jeunes et des femmes 
+            Plus d&apos;une décennie d&apos;engagement pour renforcer la résilience des jeunes et des femmes
             en Tunisie à travers la promotion du dialogue, de la tolérance et de l&apos;inclusion sociale.
           </p>
-          <div className="mt-6 flex flex-wrap justify-center gap-4 text-sm font-inter text-blue-200 font-medium">
-            <span className="bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full transition-colors hover:bg-white/15">Supervisé par CNLCT</span>
-            <span className="bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full transition-colors hover:bg-white/15">Financé par GCERF</span>
-            <span className="bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full transition-colors hover:bg-white/15">Depuis 2011</span>
+          <div className="mt-6 flex flex-wrap justify-center gap-4 text-base font-inter text-blue-200 font-medium">
+            <div className="bg-white/10 backdrop-blur-sm px-6 py-4 rounded-2xl transition-colors hover:bg-white/15 flex flex-col items-center gap-3 min-w-[200px]">
+              <span>En partenariat avec</span>
+              <Image
+                src="/uploads/logo_cnlct_c24d1f9745.png"
+                alt="CNLCT"
+                width={180}
+                height={60}
+                className="object-contain h-14 w-auto"
+              />
+            </div>
+            <div className="bg-white/10 backdrop-blur-sm px-6 py-4 rounded-2xl transition-colors hover:bg-white/15 flex flex-col items-center gap-3 min-w-[200px]">
+              <span>Financé par</span>
+              <Image
+                src="/uploads/logo_gcerf_98ab9a6565.png"
+                alt="GCERF"
+                width={180}
+                height={60}
+                className="object-contain h-14 w-auto"
+              />
+            </div>
           </div>
         </motion.div>
 
@@ -149,17 +166,17 @@ export default function ImmersiveHeroSection() {
               whileHover={{ x: '100%' }}
               transition={{ duration: 0.6 }}
             />
-            
+
             <span className="relative flex items-center justify-center gap-2.5">
               <ChartBarIcon className="w-6 h-6 group-hover:scale-110 transition-transform" />
               <span>Découvrir Notre Impact</span>
               <ArrowRightIcon className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </span>
-            
+
             {/* Glow effect */}
             <div className="absolute inset-0 rounded-2xl bg-cyan-400/0 group-hover:bg-cyan-400/20 blur-xl transition-all duration-300" />
           </motion.button>
-          
+
           {/* Secondary CTA - Videos */}
           <motion.button
             onClick={() => scrollToSection('videos')}
@@ -174,13 +191,13 @@ export default function ImmersiveHeroSection() {
               whileHover={{ x: '100%' }}
               transition={{ duration: 0.6 }}
             />
-            
+
             <span className="relative flex items-center justify-center gap-2.5">
               <PlayCircleIcon className="w-6 h-6 group-hover:scale-110 transition-transform" />
               <span>Voir Nos Vidéos</span>
               <SparklesIcon className="w-5 h-5 group-hover:rotate-12 transition-transform" />
             </span>
-            
+
             {/* Glow effect */}
             <div className="absolute inset-0 rounded-2xl bg-emerald-400/0 group-hover:bg-emerald-400/20 blur-xl transition-all duration-300" />
           </motion.button>
@@ -248,19 +265,19 @@ export default function ImmersiveHeroSection() {
         animate={{ rotate: 360, scale: [1, 1.05, 1] }}
         transition={{ duration: 35, repeat: Infinity, ease: 'linear' }}
       />
-      
+
       <motion.div
         className="absolute bottom-12 lg:bottom-16 right-8 lg:right-12 w-10 lg:w-14 h-10 lg:h-14 border-2 border-emerald-300/30 rounded-full backdrop-blur-sm"
         animate={{ rotate: -360, scale: [1, 0.95, 1] }}
         transition={{ duration: 28, repeat: Infinity, ease: 'linear' }}
       />
-      
+
       <motion.div
         className="absolute top-1/2 left-4 lg:left-6 w-0.5 lg:w-1 h-12 lg:h-16 bg-gradient-to-b from-cyan-400/60 via-teal-400/40 to-emerald-400/60 rounded-full backdrop-blur-sm"
         animate={{ scaleY: [1, 1.3, 1], opacity: [0.6, 1, 0.6] }}
         transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
       />
-      
+
       <motion.div
         className="absolute top-1/4 right-4 lg:right-6 w-0.5 lg:w-1 h-10 lg:h-14 bg-gradient-to-t from-emerald-400/60 via-teal-400/40 to-cyan-400/60 rounded-full backdrop-blur-sm"
         animate={{ scaleY: [1, 1.2, 1], opacity: [0.5, 0.9, 0.5] }}

@@ -154,8 +154,7 @@ export default function ImmersiveVideoSection() {
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
-                whileHover={{ scale: 1.05 }}
-                className={`cursor-pointer rounded-xl overflow-hidden transition-all duration-300 ${
+                className={`cursor-pointer rounded-xl overflow-hidden transition-all duration-300 transform hover:scale-105 ${
                   selectedVideo.id === video.id
                     ? 'ring-2 ring-emerald-400 shadow-lg shadow-emerald-400/25'
                     : 'hover:shadow-xl'

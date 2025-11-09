@@ -14,6 +14,7 @@ interface ContactModalProps {
 interface ContactForm {
     name: string;
     email: string;
+    phoneNumber: string;
     subject: string;
     message: string;
 }
@@ -22,8 +23,9 @@ export default function ContactModal({ isOpen, onClose, productName }: ContactMo
     const [formData, setFormData] = useState<ContactForm>({
         name: '',
         email: '',
+        phoneNumber: '',
         subject: productName ? `Intéressé par: ${productName}` : '',
-        message: productName ? `Bonjour,\n\nJe suis intéressé(e) par le produit "${productName}". Pourriez-vous me fournir plus d'informations?\n\nMerci.` : ''
+        message: productName ? `Bonjour,\n\nJe veux acheter le produit "${productName}".\n\nMerci.` : ''
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
@@ -51,7 +53,7 @@ export default function ContactModal({ isOpen, onClose, productName }: ContactMo
 
             if (response.ok) {
                 setSubmitStatus('success');
-                setFormData({ name: '', email: '', subject: '', message: '' });
+                setFormData({ name: '', email: '', phoneNumber: '', subject: '', message: '' });
                 setTimeout(() => {
                     onClose();
                     setSubmitStatus('idle');
@@ -105,7 +107,7 @@ export default function ContactModal({ isOpen, onClose, productName }: ContactMo
                                         as="h3"
                                         className="text-xl sm:text-2xl lg:text-3xl font-bold font-poppins text-left pr-10"
                                     >
-                                        Contactez-nous
+                                        {productName ? 'Acheter ce produit' : 'Contactez-nous'}
                                     </Dialog.Title>
                                     <p className="mt-2 text-sm sm:text-base text-emerald-100 font-inter text-left">
                                         Nous vous répondrons dans les plus brefs délais
@@ -161,6 +163,23 @@ export default function ContactModal({ isOpen, onClose, productName }: ContactMo
                                                     onChange={handleInputChange}
                                                     className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
                                                     placeholder="votre.email@exemple.com"
+                                                />
+                                            </div>
+
+                                            {/* Phone Number */}
+                                            <div>
+                                                <label htmlFor="phoneNumber" className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
+                                                    {productName ? 'Numéro de téléphone *' : 'Numéro de téléphone (optionnel)'}
+                                                </label>
+                                                <input
+                                                    type="tel"
+                                                    id="phoneNumber"
+                                                    name="phoneNumber"
+                                                    required={!!productName}
+                                                    value={formData.phoneNumber}
+                                                    onChange={handleInputChange}
+                                                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                                                    placeholder="+216 XX XXX XXX"
                                                 />
                                             </div>
 

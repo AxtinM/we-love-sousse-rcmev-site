@@ -30,8 +30,8 @@
     },
     "category": {
       "type": "enumeration",
-      "enum": ["textiles", "essential-oils", "handicrafts", "pottery", "jewelry"],
-      "default": "handicrafts",
+      "enum": ["tissage", "huile-essentielle", "patisserie", "produit-du-terroir", "autre"],
+      "default": "autre",
       "required": true
     },
     "images": {

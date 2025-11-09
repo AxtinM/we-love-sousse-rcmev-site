@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, email, subject, message } = body;
+    const { name, email, phoneNumber, subject, message } = body;
 
     // Validate required fields
     if (!name || !email || !subject || !message) {
@@ -23,6 +23,7 @@ export async function POST(request: NextRequest) {
         data: {
           name,
           email,
+          phoneNumber,
           subject,
           message,
         }

@@ -1,23 +1,22 @@
 {
   "name": "we-love-sousse",
   "version": "1.0.0",
-  "description": "",
+  "description": "We Love Sousse - Tourism promotion platform",
   "private": true,
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
-  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "npm run web:dev & npm run cms:dev",
+    "build": "npm run web:build && npm run cms:build",
+    "web:dev": "cd apps/web && npm run dev",
+    "web:build": "cd apps/web && npm run build",
+    "cms:dev": "cd apps/cms && npm run dev",
+    "cms:build": "cd apps/cms && npm run build",
+    "clean": "rm -rf node_modules apps/*/node_modules"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
-  "devDependencies": {
-    "turbo": "^2.5.6"
-  },
+  "devDependencies": {},
   "dependencies": {
     "axios": "^1.12.2"
   }

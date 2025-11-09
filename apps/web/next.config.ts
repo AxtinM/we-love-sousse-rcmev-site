@@ -27,6 +27,9 @@ const nextConfig: NextConfig = {
         pathname: '/uploads/**',
       },
     ],
+    // Custom loader to rewrite localhost URLs to cms hostname in Docker
+    loader: 'custom',
+    loaderFile: './src/lib/imageLoader.ts',
   },
 };
 

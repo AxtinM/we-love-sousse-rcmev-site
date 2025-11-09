@@ -14,7 +14,7 @@ interface Product {
   slug: string;
   description: string;
   price: number;
-  category: 'textiles' | 'essential-oils' | 'handicrafts' | 'pottery' | 'jewelry';
+  category: 'tissage' | 'huile-essentielle' | 'patisserie' | 'produit-du-terroir' | 'autre';
   productionCenter?: string;
   region?: string;
   inStock: boolean;
@@ -48,19 +48,19 @@ interface ProductsResponse {
 }
 
 const categoryLabels = {
-  'textiles': 'Textiles',
-  'essential-oils': 'Huiles Essentielles',
-  'handicrafts': 'Artisanat',
-  'pottery': 'Poterie',
-  'jewelry': 'Bijoux'
+  'tissage': 'Tissage',
+  'huile-essentielle': 'Huile Essentielle',
+  'patisserie': 'Pâtisserie',
+  'produit-du-terroir': 'Produit du Terroir',
+  'autre': 'Autre'
 };
 
 const categoryColors = {
-  'textiles': 'from-purple-500 to-pink-500',
-  'essential-oils': 'from-green-500 to-emerald-500',
-  'handicrafts': 'from-blue-500 to-cyan-500',
-  'pottery': 'from-orange-500 to-red-500',
-  'jewelry': 'from-yellow-500 to-amber-500'
+  'tissage': 'from-purple-500 to-pink-500',
+  'huile-essentielle': 'from-green-500 to-emerald-500',
+  'patisserie': 'from-orange-500 to-amber-500',
+  'produit-du-terroir': 'from-amber-700 to-yellow-700',
+  'autre': 'from-teal-500 to-cyan-500'
 };
 
 export default function ProductsSection() {
@@ -103,17 +103,13 @@ export default function ProductsSection() {
     
     const image = product.images[0];
     const formats = image.formats;
+    const url = formats.medium?.url || formats.large?.url || formats.small?.url || image.url;
     
-    // Server-side: use internal Docker hostname
-    if (typeof window === 'undefined') {
-      const internalUrl = process.env.STRAPI_URL || process.env.STRAPI_INTERNAL_URL || 'http://cms:1337/api';
-      const baseUrl = internalUrl.replace('/api', '');
-      return `${baseUrl}${formats.medium?.url || formats.large?.url || formats.small?.url || image.url}`;
-    }
-    
-    // Client-side: use public URL
-    const baseUrl = getStrapiURL().replace('/api', '');
-    return `${baseUrl}${formats.medium?.url || formats.large?.url || formats.small?.url || image.url}`;
+    // Return full URL for Next.js Image optimization to work
+    // Always use localhost:1337 for client-side rendering
+    // Next.js Image optimization API will handle fetching from cms:1337 server-side
+    if (url.startsWith('http')) return url;
+    return `http://localhost:1337${url}`;
   };
 
   if (loading) {
@@ -131,7 +127,7 @@ export default function ProductsSection() {
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 sm:gap-8 mb-12 sm:mb-16">
             {[...Array(3)].map((_, i) => (
               <div key={i} className="bg-white rounded-2xl sm:rounded-3xl shadow-lg overflow-hidden animate-pulse border border-gray-100/50">
-                <div className="h-64 sm:h-72 bg-gray-200"></div>
+                <div className="h-48 sm:h-56 bg-gray-200"></div>
                 <div className="p-6 sm:p-8">
                   <div className="h-3 sm:h-4 bg-gray-200 rounded w-20 sm:w-24 mb-3 sm:mb-4"></div>
                   <div className="h-5 sm:h-6 bg-gray-200 rounded w-3/4 mb-3 sm:mb-4"></div>
@@ -187,10 +183,10 @@ export default function ProductsSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="group bg-white rounded-2xl sm:rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100/50 hover:border-teal-200"
+              className="group bg-white rounded-2xl sm:rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3 overflow-hidden border border-gray-100/50 hover:border-teal-200"
             >
               <Link href={`/produits/${product.slug}`} className="block">
-                <div className="relative h-64 sm:h-72 overflow-hidden bg-gradient-to-br from-gray-100 to-gray-50">
+                <div className="relative h-48 sm:h-56 overflow-hidden bg-gradient-to-br from-gray-100 to-gray-50">
                   <Image
                     src={getImageUrl(product)}
                     alt={product.name}

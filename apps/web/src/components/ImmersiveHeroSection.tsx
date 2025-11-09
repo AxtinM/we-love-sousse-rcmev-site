@@ -80,7 +80,7 @@ export default function ImmersiveHeroSection() {
 
       {/* Main Content */}
       <div className="relative z-10 text-center text-white max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Project Logo */}
+        {/* Project Logo - Enhanced for prominence */}
         <motion.div
           initial={{ opacity: 0, y: -30, scale: 0.8 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -89,18 +89,67 @@ export default function ImmersiveHeroSection() {
         >
           <div className="flex justify-center">
             <motion.div
-              whileHover={{ scale: 1.05 }}
-              transition={{ duration: 0.3 }}
-              className="relative w-32 h-32 sm:w-40 sm:h-40 lg:w-48 lg:h-48 xl:w-56 xl:h-56"
+              whileHover={{ scale: 1.08 }}
+              animate={{ 
+                scale: [1, 1.02, 1],
+              }}
+              transition={{ 
+                scale: {
+                  duration: 3,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }
+              }}
+              className="relative w-56 h-56 sm:w-64 sm:h-64 lg:w-80 lg:h-80 xl:w-96 xl:h-96"
             >
-              <Image
-                src="/images/logo-WeLoveSousse.png"
-                alt="We Love Sousse - Logo du projet"
-                fill
-                className="object-contain drop-shadow-2xl"
-                priority
-              />
-              <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/30 to-emerald-400/30 rounded-full blur-2xl scale-110" />
+              {/* Multi-layered backdrop for contrast - Matching theme colors */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                {/* Outer pulsing glow ring - Teal/Cyan theme */}
+                <motion.div 
+                  className="absolute w-full h-full bg-gradient-to-r from-teal-400/40 via-cyan-400/40 to-emerald-400/35 rounded-full blur-3xl"
+                  animate={{ 
+                    scale: [1, 1.2, 1],
+                    opacity: [0.3, 0.5, 0.3]
+                  }}
+                  transition={{ 
+                    duration: 4,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                />
+                
+                {/* Middle glow ring - Theme-aligned gradient */}
+                <motion.div 
+                  className="absolute w-[90%] h-[90%] bg-gradient-to-br from-cyan-300/45 via-teal-300/45 to-emerald-300/40 rounded-full blur-2xl"
+                  animate={{ 
+                    scale: [1, 1.15, 1],
+                    opacity: [0.4, 0.6, 0.4]
+                  }}
+                  transition={{ 
+                    duration: 3.5,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    delay: 0.5
+                  }}
+                />
+                
+                {/* Slate-tinted backdrop circle matching hero background */}
+                <div className="absolute w-[75%] h-[75%] bg-gradient-to-br from-slate-100/15 via-white/12 to-teal-100/15 backdrop-blur-md rounded-full shadow-2xl" />
+                
+                {/* Accent border ring with theme colors */}
+                <div className="absolute w-[75%] h-[75%] border-4 border-cyan-300/25 rounded-full shadow-lg shadow-teal-500/20" />
+              </div>
+              
+              {/* Logo Image with theme-matching shadow */}
+              <div className="relative w-full h-full flex items-center justify-center p-4 sm:p-6">
+                <Image
+                  src="/images/logo-WeLoveSousse.png"
+                  alt="We Love Sousse - Logo du projet"
+                  fill
+                  className="object-contain drop-shadow-[0_0_30px_rgba(34,211,238,0.5)] filter brightness-105"
+                  priority
+                />
+              </div>
             </motion.div>
           </div>
         </motion.div>

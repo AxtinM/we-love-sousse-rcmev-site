@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 interface ContactForm {
   name: string;
   email: string;
+  phoneNumber: string;
   subject: string;
   message: string;
 }
@@ -14,6 +15,7 @@ export default function ContactSection() {
   const [formData, setFormData] = useState<ContactForm>({
     name: '',
     email: '',
+    phoneNumber: '',
     subject: '',
     message: ''
   });
@@ -44,7 +46,7 @@ export default function ContactSection() {
 
       if (response.ok) {
         setSubmitStatus('success');
-        setFormData({ name: '', email: '', subject: '', message: '' });
+        setFormData({ name: '', email: '', phoneNumber: '', subject: '', message: '' });
       } else {
         setSubmitStatus('error');
       }
@@ -192,6 +194,21 @@ export default function ContactSection() {
                       placeholder="votre@email.com"
                     />
                   </div>
+                </div>
+
+                <div>
+                  <label htmlFor="phoneNumber" className="block text-white font-medium mb-2 text-sm sm:text-base">
+                    Numéro de téléphone (optionnel)
+                  </label>
+                  <input
+                    type="tel"
+                    id="phoneNumber"
+                    name="phoneNumber"
+                    value={formData.phoneNumber}
+                    onChange={handleInputChange}
+                    className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-slate-700/50 border border-slate-500/30 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300 text-sm sm:text-base"
+                    placeholder="+216 XX XXX XXX"
+                  />
                 </div>
 
                 <div>

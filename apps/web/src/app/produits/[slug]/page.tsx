@@ -17,7 +17,7 @@ interface Product {
   slug: string;
   description: string;
   price: number;
-  category: 'textiles' | 'essential-oils' | 'handicrafts' | 'pottery' | 'jewelry';
+  category: 'tissage' | 'huile-essentielle' | 'patisserie' | 'produit-du-terroir' | 'autre';
   productionCenter?: string;
   region?: string;
   inStock: boolean;
@@ -39,19 +39,19 @@ interface Product {
 }
 
 const categoryLabels = {
-  'textiles': 'Textiles',
-  'essential-oils': 'Huiles Essentielles',
-  'handicrafts': 'Artisanat',
-  'pottery': 'Poterie',
-  'jewelry': 'Bijoux'
+  'tissage': 'Tissage',
+  'huile-essentielle': 'Huile Essentielle',
+  'patisserie': 'Pâtisserie',
+  'produit-du-terroir': 'Produit du Terroir',
+  'autre': 'Autre'
 };
 
 const categoryColors = {
-  'textiles': 'from-purple-500 to-pink-500',
-  'essential-oils': 'from-green-500 to-emerald-500',
-  'handicrafts': 'from-blue-500 to-cyan-500',
-  'pottery': 'from-orange-500 to-red-500',
-  'jewelry': 'from-yellow-500 to-amber-500'
+  'tissage': 'from-purple-500 to-pink-500',
+  'huile-essentielle': 'from-green-500 to-emerald-500',
+  'patisserie': 'from-orange-500 to-amber-500',
+  'produit-du-terroir': 'from-amber-700 to-yellow-700',
+  'autre': 'from-teal-500 to-cyan-500'
 };
 
 export default function ProductDetailPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -372,7 +372,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
                   onClick={() => setIsContactModalOpen(true)}
                   className="inline-flex items-center bg-white text-emerald-600 px-6 py-3 rounded-lg font-poppins font-medium hover:bg-emerald-50 transition-colors"
                 >
-                  Nous contacter
+                  Acheter
                 </button>
               </div>
             </motion.div>

@@ -15,10 +15,18 @@ services:
     build:
       context: ./apps/web
       dockerfile: ../../web.Dockerfile
+      args:
+        - NEXT_PUBLIC_STRAPI_URL=http://localhost:1337/api
     env_file: .env
+    environment:
+      - STRAPI_URL=http://cms:1337/api
+      - STRAPI_INTERNAL_URL=http://cms:1337/api
+      - NEXT_PUBLIC_STRAPI_URL=http://localhost:1337/api
     ports:
       - "3000:3000"
     restart: always
+    depends_on:
+      - cms
 
   cms:
     build:

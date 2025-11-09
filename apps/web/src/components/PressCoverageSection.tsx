@@ -43,13 +43,13 @@ export default function PressCoverageSection() {
 
   if (loading) {
     return (
-      <section className="py-16 sm:py-20 lg:py-24 bg-gradient-to-br from-slate-50 via-white to-cyan-50/20 relative">
-        <div className="absolute top-0 left-0 w-48 h-48 sm:w-72 sm:h-72 bg-cyan-100/30 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 right-0 w-64 h-64 sm:w-96 sm:h-96 bg-blue-100/20 rounded-full blur-3xl"></div>
+      <section className="py-16 sm:py-20 lg:py-24 bg-gradient-to-br from-slate-50 via-white to-teal-50/20 relative">
+        <div className="absolute top-0 left-0 w-48 h-48 sm:w-72 sm:h-72 bg-teal-100/30 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 right-0 w-64 h-64 sm:w-96 sm:h-96 bg-emerald-100/20 rounded-full blur-3xl"></div>
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-12 sm:mb-16 lg:mb-20">
-            <div className="h-6 bg-cyan-100 rounded-full w-40 sm:w-48 mx-auto mb-4 sm:mb-6 animate-pulse"></div>
+            <div className="h-6 bg-teal-100 rounded-full w-40 sm:w-48 mx-auto mb-4 sm:mb-6 animate-pulse"></div>
             <div className="h-8 sm:h-12 bg-gray-200 rounded w-64 sm:w-96 mx-auto mb-4 sm:mb-6 animate-pulse"></div>
             <div className="h-4 sm:h-6 bg-gray-200 rounded w-48 sm:w-80 mx-auto animate-pulse"></div>
           </div>
@@ -75,10 +75,10 @@ export default function PressCoverageSection() {
   }
 
   return (
-    <section className="py-16 sm:py-20 lg:py-24 bg-gradient-to-br from-slate-50 via-white to-cyan-50/20 relative">
+    <section className="py-16 sm:py-20 lg:py-24 bg-gradient-to-br from-slate-50 via-white to-teal-50/20 relative">
       {/* Decorative Elements */}
-      <div className="absolute top-0 left-0 w-48 h-48 sm:w-72 sm:h-72 bg-cyan-100/30 rounded-full blur-3xl"></div>
-      <div className="absolute bottom-0 right-0 w-64 h-64 sm:w-96 sm:h-96 bg-blue-100/20 rounded-full blur-3xl"></div>
+      <div className="absolute top-0 left-0 w-48 h-48 sm:w-72 sm:h-72 bg-teal-100/30 rounded-full blur-3xl"></div>
+      <div className="absolute bottom-0 right-0 w-64 h-64 sm:w-96 sm:h-96 bg-emerald-100/20 rounded-full blur-3xl"></div>
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <motion.div
@@ -88,13 +88,13 @@ export default function PressCoverageSection() {
           transition={{ duration: 0.6 }}
           className="text-center mb-12 sm:mb-16 lg:mb-20"
         >
-          <div className="inline-flex items-center px-3 sm:px-4 py-2 bg-cyan-100 text-cyan-800 rounded-full text-xs sm:text-sm font-poppins font-medium mb-4 sm:mb-6">
+          <div className="inline-flex items-center px-3 sm:px-4 py-2 bg-teal-100 text-teal-800 rounded-full text-xs sm:text-sm font-poppins font-medium mb-4 sm:mb-6">
             <NewspaperIcon className="w-4 h-4 mr-2" />
             Dans la Presse
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl xl:text-5xl font-poppins font-bold text-gray-900 mb-4 sm:mb-6 leading-tight px-4">
             Retombée
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 via-blue-600 to-indigo-600">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600">
               {" "}Presse
             </span>
           </h2>
@@ -114,9 +114,9 @@ export default function PressCoverageSection() {
               className="group"
             >
               {coverage.displayType === 'embed' ? (
-                // Embed type - show iframe or embed preview
-                <div className="bg-white rounded-2xl sm:rounded-3xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-500 border border-gray-100/50">
-                  <div className="relative aspect-video overflow-hidden">
+                // Embed type - show iframe with consistent card styling
+                <div className="bg-white rounded-2xl sm:rounded-3xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3 border border-gray-100/50">
+                  <div className="relative h-48 sm:h-56 overflow-hidden bg-gradient-to-br from-teal-100 to-emerald-100">
                     <iframe
                       src={coverage.url}
                       title={coverage.title}
@@ -127,19 +127,30 @@ export default function PressCoverageSection() {
                   </div>
                   <div className="p-6 sm:p-8">
                     {coverage.source && (
-                      <p className="text-xs sm:text-sm text-cyan-600 font-semibold mb-2">{coverage.source}</p>
+                      <p className="text-xs sm:text-sm text-teal-600 font-semibold mb-2">{coverage.source}</p>
                     )}
-                    <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-3 line-clamp-2 leading-tight">
+                    <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-3 group-hover:text-teal-700 transition-colors duration-300 line-clamp-2 leading-tight">
                       {coverage.title}
                     </h3>
                     {coverage.excerpt && (
-                      <p className="text-sm sm:text-base text-gray-600 mb-4 line-clamp-2 leading-relaxed">
+                      <p className="text-sm sm:text-base text-gray-600 mb-4 line-clamp-3 leading-relaxed">
                         {coverage.excerpt}
                       </p>
                     )}
-                    {coverage.publishedDate && (
-                      <p className="text-xs text-gray-500">{formatDate(coverage.publishedDate)}</p>
-                    )}
+                    <div className="flex items-center justify-between">
+                      {coverage.publishedDate && (
+                        <p className="text-xs text-gray-500">{formatDate(coverage.publishedDate)}</p>
+                      )}
+                      <a
+                        href={coverage.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center text-sm text-teal-600 font-semibold hover:text-teal-700 transition-colors duration-300"
+                      >
+                        Visiter la source
+                        <ArrowTopRightOnSquareIcon className="w-4 h-4 ml-2 transition-transform duration-300 hover:translate-x-1 hover:-translate-y-1" />
+                      </a>
+                    </div>
                   </div>
                 </div>
               ) : (
@@ -150,7 +161,7 @@ export default function PressCoverageSection() {
                   rel="noopener noreferrer"
                   className="block bg-white rounded-2xl sm:rounded-3xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3 border border-gray-100/50"
                 >
-                  <div className="relative h-48 sm:h-56 overflow-hidden bg-gradient-to-br from-cyan-100 to-blue-100">
+                  <div className="relative h-48 sm:h-56 overflow-hidden bg-gradient-to-br from-teal-100 to-emerald-100">
                     {getThumbnailUrl(coverage) ? (
                       <img
                         src={getThumbnailUrl(coverage)!}
@@ -159,21 +170,21 @@ export default function PressCoverageSection() {
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
-                        <NewspaperIcon className="w-20 h-20 text-cyan-300" />
+                        <NewspaperIcon className="w-20 h-20 text-teal-300" />
                       </div>
                     )}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     <div className="absolute top-3 sm:top-4 right-3 sm:right-4 bg-white/90 backdrop-blur-sm p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      <ArrowTopRightOnSquareIcon className="w-4 h-4 text-cyan-700" />
+                      <ArrowTopRightOnSquareIcon className="w-4 h-4 text-teal-700" />
                     </div>
                   </div>
                   
                   <div className="p-6 sm:p-8">
                     {coverage.source && (
-                      <p className="text-xs sm:text-sm text-cyan-600 font-semibold mb-2">{coverage.source}</p>
+                      <p className="text-xs sm:text-sm text-teal-600 font-semibold mb-2">{coverage.source}</p>
                     )}
                     
-                    <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-3 group-hover:text-cyan-700 transition-colors duration-300 line-clamp-2 leading-tight">
+                    <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-3 group-hover:text-teal-700 transition-colors duration-300 line-clamp-2 leading-tight">
                       {coverage.title}
                     </h3>
                     
@@ -187,7 +198,7 @@ export default function PressCoverageSection() {
                       {coverage.publishedDate && (
                         <p className="text-xs text-gray-500">{formatDate(coverage.publishedDate)}</p>
                       )}
-                      <div className="flex items-center text-sm text-cyan-600 font-semibold group-hover:text-cyan-700 transition-colors duration-300">
+                      <div className="flex items-center text-sm text-teal-600 font-semibold group-hover:text-teal-700 transition-colors duration-300">
                         Lire l'article
                         <ArrowTopRightOnSquareIcon className="w-4 h-4 ml-2 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1" />
                       </div>

@@ -22,6 +22,11 @@
       "type": "email",
       "required": true
     },
+    "phoneNumber": {
+      "type": "string",
+      "required": false,
+      "maxLength": 20
+    },
     "subject": {
       "type": "string",
       "required": true,

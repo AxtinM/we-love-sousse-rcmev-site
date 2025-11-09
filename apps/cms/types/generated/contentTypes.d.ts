@@ -376,8 +376,8 @@ export interface AdminUser extends Struct.CollectionTypeSchema {
 export interface ApiArticleArticle extends Struct.CollectionTypeSchema {
   collectionName: 'articles';
   info: {
-    description: '';
-    displayName: 'Article';
+    description: 'Articles, rapports, documents et autres publications';
+    displayName: 'Publication';
     pluralName: 'articles';
     singularName: 'article';
   };
@@ -397,8 +397,21 @@ export interface ApiArticleArticle extends Struct.CollectionTypeSchema {
       'api::article.article'
     > &
       Schema.Attribute.Private;
+    publicationType: Schema.Attribute.Enumeration<
+      [
+        'article',
+        'scientifique',
+        'rapport',
+        'compte-rendu',
+        'newsletter',
+        'cartographie',
+        'document',
+        'actualite',
+      ]
+    > &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'article'>;
     publishedAt: Schema.Attribute.DateTime;
-    seo: Schema.Attribute.Component<'seo.seo', false>;
     slug: Schema.Attribute.UID<'title'> & Schema.Attribute.Required;
     title: Schema.Attribute.String & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
@@ -407,274 +420,44 @@ export interface ApiArticleArticle extends Struct.CollectionTypeSchema {
   };
 }
 
-export interface ApiContactContact extends Struct.SingleTypeSchema {
-  collectionName: 'contact';
+export interface ApiContactContact extends Struct.CollectionTypeSchema {
+  collectionName: 'contacts';
   info: {
-    description: '';
+    description: 'Contact form submissions from the website';
     displayName: 'Contact';
     pluralName: 'contacts';
     singularName: 'contact';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
+    timestamps: true;
   };
   attributes: {
-    address: Schema.Attribute.Text;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     email: Schema.Attribute.Email & Schema.Attribute.Required;
-    googleMapsUrl: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
       'api::contact.contact'
     > &
       Schema.Attribute.Private;
-    phones: Schema.Attribute.Component<'shared.phone', true>;
-    publishedAt: Schema.Attribute.DateTime;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-  };
-}
-
-export interface ApiFormSubmissionFormSubmission
-  extends Struct.CollectionTypeSchema {
-  collectionName: 'form_submissions';
-  info: {
-    description: '';
-    displayName: 'Form Submission';
-    pluralName: 'form-submissions';
-    singularName: 'form-submission';
-  };
-  options: {
-    draftAndPublish: false;
-  };
-  pluginOptions: {
-    'content-manager': {
-      visible: false;
-    };
-  };
-  attributes: {
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    email: Schema.Attribute.Email & Schema.Attribute.Required;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::form-submission.form-submission'
-    > &
-      Schema.Attribute.Private;
     message: Schema.Attribute.Text & Schema.Attribute.Required;
-    name: Schema.Attribute.String & Schema.Attribute.Required;
-    publishedAt: Schema.Attribute.DateTime;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-  };
-}
-
-export interface ApiGlobalGlobal extends Struct.SingleTypeSchema {
-  collectionName: 'globals';
-  info: {
-    description: '';
-    displayName: 'Global';
-    pluralName: 'globals';
-    singularName: 'global';
-  };
-  options: {
-    draftAndPublish: true;
-  };
-  attributes: {
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    favicon: Schema.Attribute.Media<'images'>;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::global.global'
-    > &
-      Schema.Attribute.Private;
-    logo: Schema.Attribute.Media<'images'>;
-    publishedAt: Schema.Attribute.DateTime;
-    siteDescription: Schema.Attribute.Text;
-    siteName: Schema.Attribute.String & Schema.Attribute.Required;
-    socialLinks: Schema.Attribute.Component<'shared.social-link', true>;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-  };
-}
-
-export interface ApiHeroSectionHeroSection extends Struct.SingleTypeSchema {
-  collectionName: 'hero_section';
-  info: {
-    description: 'Main hero section content';
-    displayName: 'Hero Section';
-    pluralName: 'hero-sections';
-    singularName: 'hero-section';
-  };
-  options: {
-    draftAndPublish: true;
-  };
-  pluginOptions: {
-    i18n: {
-      localized: true;
-    };
-  };
-  attributes: {
-    backgroundImage: Schema.Attribute.Media<'images'>;
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    ctaText: Schema.Attribute.String &
-      Schema.Attribute.SetPluginOptions<{
-        i18n: {
-          localized: true;
-        };
-      }>;
-    impactNumbers: Schema.Attribute.Component<'shared.impact-stat', true>;
-    locale: Schema.Attribute.String;
-    localizations: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::hero-section.hero-section'
-    >;
-    mainTitle: Schema.Attribute.String &
+    name: Schema.Attribute.String &
       Schema.Attribute.Required &
-      Schema.Attribute.SetPluginOptions<{
-        i18n: {
-          localized: true;
-        };
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 255;
+      }>;
+    phoneNumber: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 20;
       }>;
     publishedAt: Schema.Attribute.DateTime;
-    subtitle: Schema.Attribute.Text &
-      Schema.Attribute.SetPluginOptions<{
-        i18n: {
-          localized: true;
-        };
-      }>;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-  };
-}
-
-export interface ApiPartnerPartner extends Struct.CollectionTypeSchema {
-  collectionName: 'partners';
-  info: {
-    description: '';
-    displayName: 'Partner';
-    pluralName: 'partners';
-    singularName: 'partner';
-  };
-  options: {
-    draftAndPublish: true;
-  };
-  attributes: {
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::partner.partner'
-    > &
-      Schema.Attribute.Private;
-    logo: Schema.Attribute.Media<'images'>;
-    name: Schema.Attribute.String & Schema.Attribute.Required;
-    order: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
-    publishedAt: Schema.Attribute.DateTime;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    url: Schema.Attribute.String;
-  };
-}
-
-export interface ApiPhotoAlbumPhotoAlbum extends Struct.CollectionTypeSchema {
-  collectionName: 'photo_albums';
-  info: {
-    description: '';
-    displayName: 'Photo Album';
-    pluralName: 'photo-albums';
-    singularName: 'photo-album';
-  };
-  options: {
-    draftAndPublish: true;
-  };
-  attributes: {
-    coverImage: Schema.Attribute.Media<'images'>;
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    description: Schema.Attribute.Text;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::photo-album.photo-album'
-    > &
-      Schema.Attribute.Private;
-    photos: Schema.Attribute.Media<'images', true>;
-    publishedAt: Schema.Attribute.DateTime;
-    slug: Schema.Attribute.UID<'title'> & Schema.Attribute.Required;
-    title: Schema.Attribute.String & Schema.Attribute.Required;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-  };
-}
-
-export interface ApiProjectPageProjectPage extends Struct.SingleTypeSchema {
-  collectionName: 'project_page';
-  info: {
-    description: 'RCMEV Project detailed content';
-    displayName: 'Project Page';
-    pluralName: 'project-pages';
-    singularName: 'project-page';
-  };
-  options: {
-    draftAndPublish: true;
-  };
-  pluginOptions: {
-    i18n: {
-      localized: true;
-    };
-  };
-  attributes: {
-    body: Schema.Attribute.RichText &
-      Schema.Attribute.SetPluginOptions<{
-        i18n: {
-          localized: true;
-        };
-      }>;
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    locale: Schema.Attribute.String;
-    localizations: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::project-page.project-page'
-    >;
-    projectGoals: Schema.Attribute.Component<'shared.project-goal', true>;
-    projectImage: Schema.Attribute.Media<'images'>;
-    publishedAt: Schema.Attribute.DateTime;
-    shortDescription: Schema.Attribute.Text &
-      Schema.Attribute.SetPluginOptions<{
-        i18n: {
-          localized: true;
-        };
-      }>;
-    targetRegions: Schema.Attribute.Component<'shared.region', true>;
-    timeline: Schema.Attribute.Component<'shared.timeline-item', true>;
-    title: Schema.Attribute.String &
+    subject: Schema.Attribute.String &
       Schema.Attribute.Required &
-      Schema.Attribute.SetPluginOptions<{
-        i18n: {
-          localized: true;
-        };
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 255;
       }>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -682,13 +465,14 @@ export interface ApiProjectPageProjectPage extends Struct.SingleTypeSchema {
   };
 }
 
-export interface ApiStatStat extends Struct.CollectionTypeSchema {
-  collectionName: 'stats';
+export interface ApiPressCoveragePressCoverage
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'press_coverages';
   info: {
-    description: '';
-    displayName: 'Stat';
-    pluralName: 'stats';
-    singularName: 'stat';
+    description: 'Articles de presse et mentions externes';
+    displayName: 'Retomb\u00E9e Presse';
+    pluralName: 'press-coverages';
+    singularName: 'press-coverage';
   };
   options: {
     draftAndPublish: true;
@@ -697,78 +481,109 @@ export interface ApiStatStat extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    label: Schema.Attribute.String & Schema.Attribute.Required;
+    displayType: Schema.Attribute.Enumeration<['embed', 'link']> &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'link'>;
+    excerpt: Schema.Attribute.Text;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<'oneToMany', 'api::stat.stat'> &
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::press-coverage.press-coverage'
+    > &
       Schema.Attribute.Private;
     order: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
     publishedAt: Schema.Attribute.DateTime;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    value: Schema.Attribute.String & Schema.Attribute.Required;
-  };
-}
-
-export interface ApiVideoVideo extends Struct.CollectionTypeSchema {
-  collectionName: 'videos';
-  info: {
-    description: '';
-    displayName: 'Video';
-    pluralName: 'videos';
-    singularName: 'video';
-  };
-  options: {
-    draftAndPublish: true;
-  };
-  attributes: {
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    description: Schema.Attribute.Text;
-    embedIdOrUrl: Schema.Attribute.String & Schema.Attribute.Required;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<'oneToMany', 'api::video.video'> &
-      Schema.Attribute.Private;
-    publishedAt: Schema.Attribute.DateTime;
-    slug: Schema.Attribute.UID<'title'> & Schema.Attribute.Required;
+    publishedDate: Schema.Attribute.Date;
+    source: Schema.Attribute.String;
     thumbnail: Schema.Attribute.Media<'images'>;
     title: Schema.Attribute.String & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    videoType: Schema.Attribute.Enumeration<['YouTube', 'Vimeo', 'Direct']> &
-      Schema.Attribute.Required;
+    url: Schema.Attribute.String & Schema.Attribute.Required;
   };
 }
 
-export interface ApiWlsPageWlsPage extends Struct.SingleTypeSchema {
-  collectionName: 'wls_page';
+export interface ApiProductProduct extends Struct.CollectionTypeSchema {
+  collectionName: 'products';
   info: {
-    description: '';
-    displayName: 'WLS Page';
-    pluralName: 'wls-pages';
-    singularName: 'wls-page';
+    description: 'Handicrafts and products from production centers';
+    displayName: 'Product';
+    pluralName: 'products';
+    singularName: 'product';
   };
   options: {
     draftAndPublish: true;
   };
   attributes: {
-    body: Schema.Attribute.RichText;
+    category: Schema.Attribute.Enumeration<
+      [
+        'tissage',
+        'huile-essentielle',
+        'patisserie',
+        'produit-du-terroir',
+        'autre',
+      ]
+    > &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'autre'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    description: Schema.Attribute.RichText;
+    featured: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    images: Schema.Attribute.Media<'images', true> & Schema.Attribute.Required;
+    inStock: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
-      'api::wls-page.wls-page'
+      'api::product.product'
     > &
       Schema.Attribute.Private;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
+    price: Schema.Attribute.Decimal & Schema.Attribute.Required;
+    productionCenter: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
-    title: Schema.Attribute.String & Schema.Attribute.Required;
+    region: Schema.Attribute.String;
+    slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+  };
+}
+
+export interface ApiProjectStatisticProjectStatistic
+  extends Struct.SingleTypeSchema {
+  collectionName: 'project_statistic';
+  info: {
+    description: 'Key project numbers and achievements';
+    displayName: 'Project Statistics';
+    pluralName: 'project-statistics';
+    singularName: 'project-statistic';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    activities: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<410>;
+    additionalStats: Schema.Attribute.JSON;
+    appliedResearch: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<19>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    directBeneficiaries: Schema.Attribute.Integer &
+      Schema.Attribute.DefaultTo<5481>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::project-statistic.project-statistic'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    womenReached: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<721>;
   };
 }
 
@@ -1283,15 +1098,9 @@ declare module '@strapi/strapi' {
       'admin::user': AdminUser;
       'api::article.article': ApiArticleArticle;
       'api::contact.contact': ApiContactContact;
-      'api::form-submission.form-submission': ApiFormSubmissionFormSubmission;
-      'api::global.global': ApiGlobalGlobal;
-      'api::hero-section.hero-section': ApiHeroSectionHeroSection;
-      'api::partner.partner': ApiPartnerPartner;
-      'api::photo-album.photo-album': ApiPhotoAlbumPhotoAlbum;
-      'api::project-page.project-page': ApiProjectPageProjectPage;
-      'api::stat.stat': ApiStatStat;
-      'api::video.video': ApiVideoVideo;
-      'api::wls-page.wls-page': ApiWlsPageWlsPage;
+      'api::press-coverage.press-coverage': ApiPressCoveragePressCoverage;
+      'api::product.product': ApiProductProduct;
+      'api::project-statistic.project-statistic': ApiProjectStatisticProjectStatistic;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
       'plugin::i18n.locale': PluginI18NLocale;

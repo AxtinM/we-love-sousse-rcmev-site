@@ -1,11 +1,18 @@
 # Agent Guidelines for We Love Sousse
 
 ## Build/Lint/Test Commands
-- `npm run dev` - Start all dev servers (uses Turbo)
-- `npm run build` - Build all apps (uses Turbo)
+- `npm run dev` - Start all dev servers (runs web and cms in parallel)
+- `npm run web:dev` - Start web app only
+- `npm run cms:dev` - Start CMS only
+- `npm run build` - Build all apps (runs web and cms builds sequentially)
 - Web app: `cd apps/web && npm run dev|build|lint`
 - CMS: `cd apps/cms && npm run dev|build`
 - No test suite currently configured
+
+## Architecture
+- Monorepo structure without workspaces (dependencies installed separately in each app)
+- No Turbo - uses simple npm scripts with `cd` commands
+- Each app has isolated node_modules to prevent dependency hoisting conflicts
 
 ## Code Style
 

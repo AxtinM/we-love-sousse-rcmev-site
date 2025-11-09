@@ -186,16 +186,10 @@ export function getStrapiMediaUrl(url?: string): string {
   if (!url) return '';
   if (url.startsWith('http')) return url;
   
-  // Server-side: use internal Docker hostname
-  if (typeof window === 'undefined') {
-    const internalUrl = process.env.STRAPI_URL || process.env.STRAPI_INTERNAL_URL || 'http://cms:1337/api';
-    const baseUrl = internalUrl.replace('/api', '');
-    return `${baseUrl}${url}`;
-  }
-  
-  // Client-side: use public URL
-  const baseUrl = getStrapiURL().replace('/api', '');
-  return `${baseUrl}${url}`;
+  // Return full URL for Next.js Image optimization
+  // Client-side: always use localhost:1337 for browser access
+  // Server-side would use cms:1337 but images are only used client-side
+  return `http://localhost:1337${url}`;
 }
 
 // Export the getStrapiURL function for use in components

@@ -187,9 +187,13 @@ export function getStrapiMediaUrl(url?: string): string {
   if (url.startsWith('http')) return url;
   
   // Return full URL for Next.js Image optimization
-  // Client-side: always use localhost:1337 for browser access
-  // Server-side would use cms:1337 but images are only used client-side
-  return `http://localhost:1337${url}`;
+  // Server-side (Docker): use internal cms hostname
+  if (typeof window === 'undefined') {
+    return `http://cms:1337${url}`;
+  }
+  
+  // Client-side: use public production URL
+  return `https://cms.rcmev.com${url}`;
 }
 
 // Export the getStrapiURL function for use in components

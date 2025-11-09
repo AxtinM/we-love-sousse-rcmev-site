@@ -1,7 +1,7 @@
-localhost:80 {
+rcmev.com {
     reverse_proxy web:3000
 }
 
-localhost:1337 {
+cms.rcmev.com {
     reverse_proxy cms:1337
 }

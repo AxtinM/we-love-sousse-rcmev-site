@@ -32,7 +32,9 @@ const nextConfig: NextConfig = {
         pathname: '/uploads/**',
       },
     ],
-    // Custom loader to rewrite localhost URLs to cms hostname in Docker
+    // Custom loader to rewrite CMS URLs for Docker internal networking
+    // Note: This loader will pass through relative paths (like /uploads/*)
+    // so they're served from the public directory
     loader: 'custom',
     loaderFile: './src/lib/imageLoader.ts',
   },

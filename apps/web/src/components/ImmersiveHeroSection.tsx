@@ -44,8 +44,10 @@ export default function ImmersiveHeroSection() {
           src="/images/project-activities/activite-atdef.jpg"
           alt="We Love Sousse Project Activities"
           fill
-          className="object-cover"
+          className="object-cover object-center"
+          style={{ objectPosition: '50% 50%' }}
           priority
+          sizes="100vw"
         />
         {/* Overlay for better text readability */}
         <div className="absolute inset-0 bg-gradient-to-br from-slate-900/85 via-blue-900/75 to-teal-900/70" />

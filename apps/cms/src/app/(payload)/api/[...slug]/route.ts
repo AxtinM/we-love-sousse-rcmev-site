@@ -1,8 +1,10 @@
-import { getPayload } from 'payload'
-import config from '@payload-config'
+/* THIS IS REQUIRED SO PAYLOAD CAN HANDLE REQUESTS */
+import { getPayloadHMR } from '@payloadcms/next/utilities'
+import configPromise from '@payload-config'
+import { REST_DELETE, REST_GET, REST_PATCH, REST_POST, REST_PUT } from '@payloadcms/next/routes'
 
-export async function GET() {
-  const payload = await getPayload({ config })
-  
-  return Response.json({ message: 'Payload CMS API' })
-}
+export const GET = REST_GET(configPromise)
+export const POST = REST_POST(configPromise)
+export const DELETE = REST_DELETE(configPromise)
+export const PATCH = REST_PATCH(configPromise)
+export const PUT = REST_PUT(configPromise)

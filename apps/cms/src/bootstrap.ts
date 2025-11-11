@@ -1,4 +1,4 @@
-export default async ({ strapi }) => {
-  // Minimal bootstrap - just log that Strapi is ready
-  console.log('🚀 Strapi has started successfully');
+// Payload bootstrap function - runs after initialization
+export default async () => {
+  console.log('🚀 Payload CMS has started successfully');
 };

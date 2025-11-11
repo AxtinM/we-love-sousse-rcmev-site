@@ -50,7 +50,8 @@ services:
       context: ./apps/web
       dockerfile: ../../web.Dockerfile
       args:
-        - NEXT_PUBLIC_STRAPI_URL=${NEXT_PUBLIC_STRAPI_URL}
+        - NEXT_PUBLIC_PAYLOAD_URL=${NEXT_PUBLIC_PAYLOAD_URL}
+        - PAYLOAD_API_URL=${PAYLOAD_API_URL}
     env_file: .env
     ports:
       - "3000:3000"  # Exposed for local access

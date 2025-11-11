@@ -242,14 +242,15 @@ export async function getProjectStatistics(): Promise<ProjectStatistics | null> 
 export function getPayloadMediaUrl(mediaOrUrl?: Media | string): string {
   if (!mediaOrUrl) return '';
   
+  const baseUrl = typeof window === 'undefined' 
+    ? (process.env.PAYLOAD_API_URL || 'http://cms:1337').replace('/api', '')
+    : (process.env.NEXT_PUBLIC_PAYLOAD_URL || 'http://localhost:1337').replace('/api', '');
+  
   // If it's already a full URL string, return it
   if (typeof mediaOrUrl === 'string') {
     if (mediaOrUrl.startsWith('http')) return mediaOrUrl;
     // If it's a relative path, make it absolute
-    if (typeof window === 'undefined') {
-      return `http://cms:1337${mediaOrUrl}`;
-    }
-    return `https://cms.rcmev.com${mediaOrUrl}`;
+    return `${baseUrl}${mediaOrUrl}`;
   }
   
   // If it's a Media object, get the URL
@@ -259,13 +260,7 @@ export function getPayloadMediaUrl(mediaOrUrl?: Media | string): string {
   if (url.startsWith('http')) return url;
   
   // Return full URL for Next.js Image optimization
-  // Server-side (Docker): use internal cms hostname
-  if (typeof window === 'undefined') {
-    return `http://cms:1337${url}`;
-  }
-  
-  // Client-side: use public production URL
-  return `https://cms.rcmev.com${url}`;
+  return `${baseUrl}${url}`;
 }
 
 // Export the getPayloadURL function for use in components

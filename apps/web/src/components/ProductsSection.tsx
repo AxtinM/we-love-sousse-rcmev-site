@@ -5,47 +5,7 @@ import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { ShoppingBagIcon, TagIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import Image from 'next/image';
-import { getStrapiURL } from '@/lib/api';
-
-interface Product {
-  id: number;
-  documentId: string;
-  name: string;
-  slug: string;
-  description: string;
-  price: number;
-  category: 'tissage' | 'huile-essentielle' | 'patisserie' | 'produit-du-terroir' | 'autre';
-  productionCenter?: string;
-  region?: string;
-  inStock: boolean;
-  featured: boolean;
-  publishedAt: string;
-  createdAt: string;
-  updatedAt: string;
-  images: {
-    id: number;
-    url: string;
-    alternativeText: string;
-    formats: {
-      large?: { url: string };
-      medium?: { url: string };
-      small?: { url: string };
-      thumbnail?: { url: string };
-    };
-  }[];
-}
-
-interface ProductsResponse {
-  data: Product[];
-  meta: {
-    pagination: {
-      page: number;
-      pageSize: number;
-      pageCount: number;
-      total: number;
-    };
-  };
-}
+import { getProducts, getPayloadMediaUrl, type Product, type Media } from '@/lib/api';
 
 const categoryLabels = {
   'tissage': 'Tissage',
@@ -68,16 +28,11 @@ export default function ProductsSection() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchProductsData = async () => {
       try {
-        const response = await fetch(`${getStrapiURL()}/products?populate=*&pagination[limit]=6&sort=featured:desc,publishedAt:desc`);
-        if (response.ok) {
-          const data: ProductsResponse = await response.json();
-          setProducts(data.data || []);
-        } else {
-          console.warn('Failed to fetch products - CMS may not be available');
-          setProducts([]);
-        }
+        const data = await getProducts();
+        // Limit to 6 products for homepage
+        setProducts(data.slice(0, 6));
       } catch (error) {
         console.error('Error fetching products:', error);
         setProducts([]);
@@ -86,7 +41,7 @@ export default function ProductsSection() {
       }
     };
 
-    fetchProducts();
+    fetchProductsData();
   }, []);
 
   const formatPrice = (price: number) => {
@@ -102,14 +57,8 @@ export default function ProductsSection() {
     if (!product.images || product.images.length === 0) return '/images/default-product.jpg';
     
     const image = product.images[0];
-    const formats = image.formats;
-    const url = formats.medium?.url || formats.large?.url || formats.small?.url || image.url;
-    
-    // Return full URL for Next.js Image optimization to work
-    // Always use localhost:1337 for client-side rendering
-    // Next.js Image optimization API will handle fetching from cms:1337 server-side
-    if (url.startsWith('http')) return url;
-    return `http://localhost:1337${url}`;
+    // Use Payload media helper
+    return getPayloadMediaUrl(image);
   };
 
   if (loading) {

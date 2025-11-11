@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { ChevronRightIcon, CalendarDaysIcon, MagnifyingGlassIcon, ArrowLeftIcon, EyeIcon } from '@heroicons/react/24/outline';
 import Image from 'next/image';
-import { getArticles, getStrapiMediaUrl, type Article, type PublicationType } from '@/lib/api';
+import { getArticles, getPayloadMediaUrl, type Article, type PublicationType } from '@/lib/api';
 
 const PUBLICATION_TYPES: { value: PublicationType | 'all'; label: string }[] = [
   { value: 'all', label: 'Tous' },
@@ -272,10 +272,10 @@ export default function ArticlesPage() {
                     <Link href={`/articles/${publication.slug}`}>
                       <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
                         <div className="relative h-56 overflow-hidden">
-                          {publication.coverImage?.data?.attributes?.url ? (
+                          {publication.coverImage ? (
                             <Image
-                              src={getStrapiMediaUrl(publication.coverImage.data.attributes.url)}
-                              alt={publication.coverImage.data.attributes.alternativeText || publication.title}
+                              src={getPayloadMediaUrl(publication.coverImage) || ''}
+                              alt={(typeof publication.coverImage === 'object' ? publication.coverImage.alt : null) || publication.title}
                               fill
                               className="object-cover transition-transform duration-300 group-hover:scale-110"
                             />
@@ -293,7 +293,7 @@ export default function ArticlesPage() {
                         <div className="p-6">
                           <div className="flex items-center text-sm text-gray-500 mb-3">
                             <CalendarDaysIcon className="h-4 w-4 mr-2 text-emerald-500" />
-                            {publication.publishedAt ? formatDate(publication.publishedAt) : formatDate(publication.createdAt)}
+                            {formatDate(publication.createdAt)}
                           </div>
                           
                           <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-emerald-600 transition-colors duration-300 line-clamp-2 leading-tight">

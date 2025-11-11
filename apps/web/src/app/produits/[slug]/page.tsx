@@ -8,35 +8,7 @@ import ReactMarkdown from 'react-markdown';
 import { ArrowLeftIcon, ShoppingBagIcon, MapPinIcon, TagIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
 import ContactModal from '@/components/ContactModal';
-import { getStrapiURL } from '@/lib/api';
-
-interface Product {
-  id: number;
-  documentId: string;
-  name: string;
-  slug: string;
-  description: string;
-  price: number;
-  category: 'tissage' | 'huile-essentielle' | 'patisserie' | 'produit-du-terroir' | 'autre';
-  productionCenter?: string;
-  region?: string;
-  inStock: boolean;
-  featured: boolean;
-  publishedAt: string;
-  createdAt: string;
-  updatedAt: string;
-  images: {
-    id: number;
-    url: string;
-    alternativeText: string;
-    formats: {
-      large?: { url: string };
-      medium?: { url: string };
-      small?: { url: string };
-      thumbnail?: { url: string };
-    };
-  }[];
-}
+import { getProductBySlug, getProducts, getPayloadMediaUrl, type Product } from '@/lib/api';
 
 const categoryLabels = {
   'tissage': 'Tissage',
@@ -77,20 +49,13 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
   const fetchProduct = async () => {
     setLoading(true);
     try {
-      const response = await fetch(
-        `${getStrapiURL()}/products?filters[slug][$eq]=${slug}&populate=*`
-      );
-      
-      if (response.ok) {
-        const data = await response.json();
-        if (data.data && data.data.length > 0) {
-          const productData = data.data[0];
-          setProduct(productData);
-          
-          // Fetch related products from same category
-          if (productData.category) {
-            fetchRelatedProducts(productData.category, productData.id);
-          }
+      const productData = await getProductBySlug(slug);
+      if (productData) {
+        setProduct(productData);
+        
+        // Fetch related products from same category
+        if (productData.category) {
+          fetchRelatedProducts(productData.category, productData.id);
         }
       }
     } catch (error) {
@@ -100,16 +65,11 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
     }
   };
 
-  const fetchRelatedProducts = async (category: string, currentProductId: number) => {
+  const fetchRelatedProducts = async (category: string, currentProductId: string) => {
     try {
-      const response = await fetch(
-        `${getStrapiURL()}/products?filters[category][$eq]=${category}&filters[id][$ne]=${currentProductId}&populate=*&pagination[limit]=4`
-      );
-      
-      if (response.ok) {
-        const data = await response.json();
-        setRelatedProducts(data.data || []);
-      }
+      const allProducts = await getProducts();
+      const filtered = allProducts.filter(p => p.category === category && p.id !== currentProductId).slice(0, 4);
+      setRelatedProducts(filtered);
     } catch (error) {
       console.error('Error fetching related products:', error);
     }
@@ -117,19 +77,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
 
   const getImageUrl = (image: any) => {
     if (!image) return '/images/default-product.jpg';
-    
-    const formats = image.formats;
-    
-    // Server-side: use internal Docker hostname
-    if (typeof window === 'undefined') {
-      const internalUrl = process.env.STRAPI_URL || process.env.STRAPI_INTERNAL_URL || 'http://cms:1337/api';
-      const baseUrl = internalUrl.replace('/api', '');
-      return `${baseUrl}${formats?.large?.url || formats?.medium?.url || formats?.small?.url || image.url}`;
-    }
-    
-    // Client-side: use public URL
-    const baseUrl = getStrapiURL().replace('/api', '');
-    return `${baseUrl}${formats?.large?.url || formats?.medium?.url || formats?.small?.url || image.url}`;
+    return getPayloadMediaUrl(image) || '/images/default-product.jpg';
   };
 
   const formatPrice = (price: number) => {
@@ -224,7 +172,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
                   {product.images && product.images.length > 0 ? (
                     <Image
                       src={getImageUrl(product.images[currentImageIndex])}
-                      alt={product.images[currentImageIndex]?.alternativeText || product.name}
+                      alt={(typeof product.images[currentImageIndex] === 'object' ? product.images[currentImageIndex].alt : null) || product.name}
                       fill
                       className="object-cover"
                     />
@@ -265,7 +213,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
                   <div className="flex space-x-2 mt-4 overflow-x-auto pb-2">
                     {product.images.map((image, index) => (
                       <button
-                        key={image.id}
+                        key={typeof image === 'object' ? image.id : index}
                         onClick={() => setCurrentImageIndex(index)}
                         className={`flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden border-2 transition-all ${
                           index === currentImageIndex 
@@ -275,7 +223,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
                       >
                         <Image
                           src={getImageUrl(image)}
-                          alt={image.alternativeText || product.name}
+                          alt={(typeof image === 'object' ? image.alt : null) || product.name}
                           width={80}
                           height={80}
                           className="w-full h-full object-cover"
@@ -351,15 +299,13 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
               {product.description && (
                 <div className="bg-white/60 backdrop-blur-sm rounded-xl p-4 sm:p-6 border border-gray-200">
                   <h3 className="font-poppins font-semibold text-gray-900 mb-3">Description</h3>
-                  <div className="text-gray-700 font-inter leading-relaxed prose prose-sm sm:prose max-w-none
-                    prose-headings:font-poppins prose-headings:text-gray-900 
-                    prose-p:text-gray-700 prose-p:my-2
-                    prose-strong:text-gray-900 prose-strong:font-semibold
-                    prose-ul:my-2 prose-ul:list-disc prose-ul:list-inside
-                    prose-ol:my-2 prose-ol:list-decimal prose-ol:list-inside
-                    prose-li:text-gray-700 prose-li:my-1
-                    prose-a:text-emerald-600 prose-a:no-underline hover:prose-a:underline">
-                    <ReactMarkdown>{product.description}</ReactMarkdown>
+                  <div className="text-gray-700 font-inter leading-relaxed">
+                    {/* TODO: Implement Lexical JSON renderer or convert to plain text */}
+                    {typeof product.description === 'string' ? (
+                      <ReactMarkdown>{product.description}</ReactMarkdown>
+                    ) : (
+                      <p>Description disponible dans le CMS</p>
+                    )}
                   </div>
                 </div>
               )}

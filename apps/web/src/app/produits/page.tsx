@@ -5,47 +5,7 @@ import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { ArrowLeftIcon, ShoppingBagIcon, TagIcon, MapPinIcon } from '@heroicons/react/24/outline';
 import Image from 'next/image';
-import { getStrapiURL } from '@/lib/api';
-
-interface Product {
-  id: number;
-  documentId: string;
-  name: string;
-  slug: string;
-  description: string;
-  price: number;
-  category: 'tissage' | 'huile-essentielle' | 'patisserie' | 'produit-du-terroir' | 'autre';
-  productionCenter?: string;
-  region?: string;
-  inStock: boolean;
-  featured: boolean;
-  publishedAt: string;
-  createdAt: string;
-  updatedAt: string;
-  images: {
-    id: number;
-    url: string;
-    alternativeText: string;
-    formats: {
-      large?: { url: string };
-      medium?: { url: string };
-      small?: { url: string };
-      thumbnail?: { url: string };
-    };
-  }[];
-}
-
-interface ProductsResponse {
-  data: Product[];
-  meta: {
-    pagination: {
-      page: number;
-      pageSize: number;
-      pageCount: number;
-      total: number;
-    };
-  };
-}
+import { getProducts, getPayloadMediaUrl, type Product } from '@/lib/api';
 
 const categoryLabels = {
   'tissage': 'Tissage',
@@ -82,18 +42,30 @@ export default function ProductsPage() {
   const fetchProducts = async (page: number, category: string = 'all') => {
     setLoading(true);
     try {
-      let url = `${getStrapiURL()}/products?populate=*&pagination[page]=${page}&pagination[pageSize]=12&sort=featured:desc,publishedAt:desc`;
+      const allProducts = await getProducts();
       
-      if (category !== 'all') {
-        url += `&filters[category][$eq]=${category}`;
-      }
-
-      const response = await fetch(url);
-      if (response.ok) {
-        const data: ProductsResponse = await response.json();
-        setProducts(data.data);
-        setPagination(data.meta.pagination);
-      }
+      // Filter by category if needed
+      let filteredProducts = category !== 'all' 
+        ? allProducts.filter(p => p.category === category)
+        : allProducts;
+      
+      // Sort: featured first, then by createdAt
+      filteredProducts.sort((a, b) => {
+        if (a.featured && !b.featured) return -1;
+        if (!a.featured && b.featured) return 1;
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      });
+      
+      // Client-side pagination
+      const pageSize = 12;
+      const total = filteredProducts.length;
+      const pageCount = Math.ceil(total / pageSize);
+      const start = (page - 1) * pageSize;
+      const end = start + pageSize;
+      const paginatedProducts = filteredProducts.slice(start, end);
+      
+      setProducts(paginatedProducts);
+      setPagination({ page, pageSize, pageCount, total });
     } catch (error) {
       console.error('Error fetching products:', error);
     } finally {
@@ -103,20 +75,7 @@ export default function ProductsPage() {
 
   const getImageUrl = (product: Product) => {
     if (!product.images || product.images.length === 0) return '/images/default-product.jpg';
-    
-    const image = product.images[0];
-    const formats = image.formats;
-    
-    // Server-side: use internal Docker hostname
-    if (typeof window === 'undefined') {
-      const internalUrl = process.env.STRAPI_URL || process.env.STRAPI_INTERNAL_URL || 'http://cms:1337/api';
-      const baseUrl = internalUrl.replace('/api', '');
-      return `${baseUrl}${formats.medium?.url || formats.large?.url || formats.small?.url || image.url}`;
-    }
-    
-    // Client-side: use public URL
-    const baseUrl = getStrapiURL().replace('/api', '');
-    return `${baseUrl}${formats.medium?.url || formats.large?.url || formats.small?.url || image.url}`;
+    return getPayloadMediaUrl(product.images[0]) || '/images/default-product.jpg';
   };
 
   const formatPrice = (price: number) => {
@@ -281,7 +240,7 @@ export default function ProductsPage() {
                         <div className="relative h-64 overflow-hidden">
                           <Image
                             src={getImageUrl(product)}
-                            alt={product.images?.[0]?.alternativeText || product.name}
+                            alt={(typeof product.images?.[0] === 'object' ? product.images[0].alt : null) || product.name}
                             fill
                             className="object-cover transition-transform duration-300 group-hover:scale-110"
                           />

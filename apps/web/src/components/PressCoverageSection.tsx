@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { ArrowTopRightOnSquareIcon, NewspaperIcon } from '@heroicons/react/24/outline';
-import { getPressCoverage, getStrapiMediaUrl, type PressCoverage } from '@/lib/api';
+import { getPressCoverage, getPayloadMediaUrl, type PressCoverage } from '@/lib/api';
 
 export default function PressCoverageSection() {
   const [pressCoverage, setPressCoverage] = useState<PressCoverage[]>([]);
@@ -35,8 +35,8 @@ export default function PressCoverageSection() {
   };
 
   const getThumbnailUrl = (coverage: PressCoverage) => {
-    if (coverage.thumbnail?.data?.attributes?.url) {
-      return getStrapiMediaUrl(coverage.thumbnail.data.attributes.url);
+    if (coverage.thumbnail) {
+      return getPayloadMediaUrl(coverage.thumbnail);
     }
     return null;
   };
@@ -165,7 +165,7 @@ export default function PressCoverageSection() {
                     {getThumbnailUrl(coverage) ? (
                       <img
                         src={getThumbnailUrl(coverage)!}
-                        alt={coverage.thumbnail?.data?.attributes?.alternativeText || coverage.title}
+                        alt={(typeof coverage.thumbnail === 'object' ? coverage.thumbnail.alt : null) || coverage.title}
                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                       />
                     ) : (

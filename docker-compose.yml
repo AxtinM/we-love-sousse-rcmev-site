@@ -26,21 +26,19 @@ services:
       timeout: 5s
       retries: 5
 
-  # Strapi CMS (Production build)
+  # Payload CMS (Production build)
   cms:
     build:
       context: ./apps/cms
-      dockerfile: ../../strapi.Dockerfile
-      args:
-        - STRAPI_ADMIN_BACKEND_URL=${STRAPI_ADMIN_BACKEND_URL}
-        - NODE_ENV=${NODE_ENV}
+      dockerfile: ../../payload.Dockerfile
     env_file: .env
     environment:
       - NODE_ENV=${NODE_ENV}
+      - PAYLOAD_SECRET=${PAYLOAD_SECRET}
+      - DATABASE_URI=${DATABASE_URI}
+      - PAYLOAD_PUBLIC_SERVER_URL=${PAYLOAD_PUBLIC_SERVER_URL}
     ports:
       - "1337:1337"  # Exposed for local access
-    volumes:
-      - strapi_uploads:/srv/app/public/uploads
     depends_on:
       db:
         condition: service_healthy
@@ -78,6 +76,5 @@ services:
 
 volumes:
   db_data:
-  strapi_uploads:
   caddy_data:
   caddy_config:

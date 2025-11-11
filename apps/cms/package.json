@@ -2,41 +2,40 @@
   "name": "cms",
   "version": "0.1.0",
   "private": true,
-  "description": "A Strapi application",
+  "description": "Payload CMS for We Love Sousse",
+  "type": "module",
   "scripts": {
-    "build": "strapi build",
-    "console": "strapi console",
-    "deploy": "strapi deploy",
-    "dev": "strapi develop",
-    "develop": "strapi develop",
-    "start": "strapi start",
-    "strapi": "strapi",
-    "upgrade": "npx @strapi/upgrade latest",
-    "upgrade:dry": "npx @strapi/upgrade latest --dry"
+    "dev": "cross-env NODE_OPTIONS=--no-deprecation payload dev",
+    "build": "cross-env NODE_OPTIONS=--no-deprecation payload build",
+    "start": "cross-env NODE_OPTIONS=--no-deprecation payload start",
+    "generate:types": "payload generate:types",
+    "migrate": "node --loader ts-node/esm src/migrate.ts"
   },
   "dependencies": {
-    "@strapi/plugin-cloud": "5.23.4",
-    "@strapi/plugin-users-permissions": "5.23.4",
-    "@strapi/strapi": "5.23.4",
-    "better-sqlite3": "11.3.0",
+    "@payloadcms/db-postgres": "^3.0.0",
+    "@payloadcms/next": "^3.0.0",
+    "@payloadcms/plugin-cloud": "^3.0.0",
+    "@payloadcms/richtext-lexical": "^3.0.0",
+    "@payloadcms/storage-s3": "^3.0.0",
+    "@payloadcms/ui": "^3.0.0",
+    "cross-env": "^7.0.3",
+    "graphql": "^16.8.1",
+    "next": "^15.0.3",
+    "payload": "^3.0.0",
     "pg": "^8.12.0",
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0",
-    "react-router-dom": "^6.0.0",
-    "styled-components": "^6.0.0"
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "sharp": "^0.33.5"
   },
   "devDependencies": {
-    "@types/node": "^20",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
-    "typescript": "^5"
+    "@types/node": "^22.7.5",
+    "@types/react": "^18.3.11",
+    "@types/react-dom": "^18.3.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.3"
   },
   "engines": {
     "node": ">=18.0.0 <=22.x.x",
     "npm": ">=6.0.0"
-  },
-  "strapi": {
-    "uuid": "6821310f-448f-479f-a1ba-0bf8f1e343cd",
-    "installId": "82a0c5e93776546c9361753b1676a277661a55c66999a81149e52040c36b2dd9"
   }
 }

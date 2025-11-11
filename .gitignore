@@ -126,6 +126,7 @@ __pycache__/
 venv/
 env/
 ENV/
+!apps/cms/config/env/
 
 # Misc
 *.tgz

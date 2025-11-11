@@ -1,57 +1,83 @@
-services:
-  proxy:
-    image: caddy:2
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile
-      - caddy_data:/data
-    depends_on:
-      - web
-      - cms
+# =============================================================================
+# UNIFIED DOCKER COMPOSE - Works for both local and production
+# =============================================================================
+# Instructions:
+# 1. Edit .env file and uncomment the environment you want (local or VPS)
+# 2. Run: docker-compose up -d --build
+# 3. That's it!
+# =============================================================================
 
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: ${DATABASE_NAME}
+      POSTGRES_USER: ${DATABASE_USERNAME}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+    ports:
+      - "5432:5432"  # Exposed for DB tools
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USERNAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Strapi CMS (Production build)
+  cms:
+    build:
+      context: ./apps/cms
+      dockerfile: ../../strapi.Dockerfile
+      args:
+        - STRAPI_ADMIN_BACKEND_URL=${STRAPI_ADMIN_BACKEND_URL}
+        - NODE_ENV=${NODE_ENV}
+    env_file: .env
+    environment:
+      - NODE_ENV=${NODE_ENV}
+    ports:
+      - "1337:1337"  # Exposed for local access
+    volumes:
+      - strapi_uploads:/srv/app/public/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: always
+
+  # Next.js Web App (Production build)
   web:
     build:
       context: ./apps/web
       dockerfile: ../../web.Dockerfile
       args:
-        - NEXT_PUBLIC_STRAPI_URL=https://cms.rcmev.com/api
+        - NEXT_PUBLIC_STRAPI_URL=${NEXT_PUBLIC_STRAPI_URL}
     env_file: .env
-    environment:
-      - STRAPI_URL=http://cms:1337/api
-      - STRAPI_INTERNAL_URL=http://cms:1337/api
-      - NEXT_PUBLIC_STRAPI_URL=https://cms.rcmev.com/api
     ports:
-      - "3000:3000"
-    restart: always
+      - "3000:3000"  # Exposed for local access
     depends_on:
       - cms
-
-  cms:
-    build:
-      context: ./apps/cms
-      dockerfile: ../../strapi.Dockerfile
-    env_file: .env
-    ports:
-      - "1337:1337"
-    volumes:
-      - strapi_uploads:/srv/app/public/uploads
-    depends_on:
-      - db
     restart: always
 
-  db:
-    image: postgres:15
-    environment:
-      POSTGRES_DB: strapi
-      POSTGRES_USER: strapi
-      POSTGRES_PASSWORD: changeme
-    volumes:
-      - db_data:/var/lib/postgresql/data
-    restart: always
+  # Caddy Reverse Proxy (Only needed for VPS with SSL)
+  # Uncomment this service when deploying to VPS
+  # proxy:
+  #   image: caddy:2-alpine
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #   volumes:
+  #     - ./Caddyfile:/etc/caddy/Caddyfile
+  #     - caddy_data:/data
+  #     - caddy_config:/config
+  #   depends_on:
+  #     - web
+  #     - cms
+  #   restart: always
 
 volumes:
   db_data:
   strapi_uploads:
   caddy_data:
+  caddy_config:

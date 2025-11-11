@@ -1,18 +1,21 @@
 # Agent Guidelines for We Love Sousse
 
 ## Build/Lint/Test Commands
-- `npm run dev` - Start all dev servers (runs web and cms in parallel)
-- `npm run web:dev` - Start web app only
-- `npm run cms:dev` - Start CMS only
-- `npm run build` - Build all apps (runs web and cms builds sequentially)
-- Web app: `cd apps/web && npm run dev|build|lint`
-- CMS: `cd apps/cms && npm run dev|build`
+- `npm run dev` - Start all services via Docker Compose (requires .env.local file)
+- `npm run dev:logs` - View logs from all services
+- `npm run logs:web` / `npm run logs:cms` - View logs for specific service
+- `npm run build` - Build and start all services via Docker
+- `npm run down` - Stop all Docker services
+- Web app (local): `cd apps/web && npm run dev|build|lint`
+- CMS (local): `cd apps/cms && npm run dev|build`
 - No test suite currently configured
 
 ## Architecture
 - Monorepo structure without workspaces (dependencies installed separately in each app)
-- No Turbo - uses simple npm scripts with `cd` commands
+- Docker Compose setup for development (web on port 3000, CMS on port 1337)
+- Next.js 15 frontend (`apps/web`) + Strapi 5 CMS (`apps/cms`)
 - Each app has isolated node_modules to prevent dependency hoisting conflicts
+- Environment-aware API URLs: internal Docker network (cms:1337) for SSR, public URL for client-side
 
 ## Code Style
 

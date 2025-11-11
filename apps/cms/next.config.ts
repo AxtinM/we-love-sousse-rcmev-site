@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
   experimental: {
     reactCompiler: false,
   },
+  outputFileTracingRoot: require('path').join(__dirname, '../../'),
 }
 
 export default withPayload(nextConfig)

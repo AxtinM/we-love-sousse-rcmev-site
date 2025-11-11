@@ -6,6 +6,7 @@ import { fileURLToPath } from 'url'
 import sharp from 'sharp'
 
 // Collections
+import { Users } from './collections/Users'
 import { Articles } from './collections/Articles'
 import { Products } from './collections/Products'
 import { Contacts } from './collections/Contacts'
@@ -27,6 +28,7 @@ export default buildConfig({
     },
   },
   collections: [
+    Users,
     Articles,
     Products,
     Contacts,

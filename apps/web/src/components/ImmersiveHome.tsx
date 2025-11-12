@@ -54,7 +54,7 @@ export default function ImmersiveHome() {
       {/* Hero Section */}
       <motion.section
         style={{ y: heroY }}
-        className="h-screen relative overflow-hidden bg-gradient-to-br from-slate-900 via-blue-900 to-teal-900"
+        className="min-h-screen relative overflow-hidden bg-gradient-to-br from-slate-900 via-blue-900 to-teal-900"
       >
         <ImmersiveHeroSection />
       </motion.section>

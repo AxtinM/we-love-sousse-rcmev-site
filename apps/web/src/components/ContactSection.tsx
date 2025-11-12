@@ -132,25 +132,10 @@ export default function ContactSection() {
                     </div>
                     <div>
                       <h4 className="text-white font-semibold mb-1 text-sm sm:text-base">Email</h4>
-                      <p className="text-slate-300 text-sm sm:text-base">contact@welovesousse.tn</p>
+                      <p className="text-slate-300 text-sm sm:text-base">we.love.sousse@gmail.com</p>
                     </div>
                   </motion.div>
 
-                  <motion.div 
-                    className="flex items-start space-x-3 sm:space-x-4"
-                    whileHover={{ x: 10 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <div className="bg-teal-500/20 p-2 sm:p-3 rounded-lg flex-shrink-0">
-                      <svg className="w-5 h-5 sm:w-6 sm:h-6 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                      </svg>
-                    </div>
-                    <div>
-                      <h4 className="text-white font-semibold mb-1 text-sm sm:text-base">Contact Principal</h4>
-                      <p className="text-slate-300 text-sm sm:text-base">Alice - Coordinatrice de Projet</p>
-                    </div>
-                  </motion.div>
                 </div>
               </div>
             </motion.div>

@@ -2,39 +2,41 @@
   "name": "cms",
   "version": "0.1.0",
   "private": true,
-  "description": "Payload CMS for We Love Sousse",
-  "type": "module",
+  "description": "A Strapi application",
   "scripts": {
-    "dev": "cross-env NODE_OPTIONS=--no-deprecation next dev -p 1337",
-    "build": "cross-env NODE_OPTIONS=--no-deprecation next build",
-    "start": "cross-env NODE_OPTIONS=--no-deprecation next start -p 1337",
-    "generate:types": "payload generate:types",
-    "migrate": "node --loader ts-node/esm src/migrate.ts"
+    "build": "strapi build",
+    "console": "strapi console",
+    "deploy": "strapi deploy",
+    "dev": "strapi develop",
+    "develop": "strapi develop",
+    "start": "strapi start",
+    "strapi": "strapi",
+    "upgrade": "npx @strapi/upgrade latest",
+    "upgrade:dry": "npx @strapi/upgrade latest --dry"
   },
   "dependencies": {
-    "@payloadcms/db-postgres": "^3.0.0",
-    "@payloadcms/next": "^3.0.0",
-    "@payloadcms/richtext-lexical": "^3.0.0",
-    "@payloadcms/storage-s3": "^3.0.0",
-    "@payloadcms/ui": "^3.0.0",
-    "cross-env": "^7.0.3",
-    "graphql": "^16.8.1",
-    "next": "^15.0.3",
-    "payload": "^3.0.0",
-    "pg": "^8.12.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "sharp": "^0.33.5"
+    "@strapi/plugin-cloud": "5.31.0",
+    "@strapi/plugin-users-permissions": "5.31.0",
+    "@strapi/strapi": "5.31.0",
+    "better-sqlite3": "12.4.1",
+    "pg": "^8.16.3",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "react-router-dom": "^6.0.0",
+    "styled-components": "^6.0.0"
   },
   "devDependencies": {
-    "@types/node": "^22.7.5",
-    "@types/react": "^19.0.0",
-    "@types/react-dom": "^19.0.0",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.6.3"
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "typescript": "^5"
   },
   "engines": {
-    "node": ">=18.0.0 <=22.x.x",
+    "node": ">=20.0.0 <=24.x.x",
     "npm": ">=6.0.0"
+  },
+  "strapi": {
+    "uuid": "eaf5de69-1ba4-46bd-8a8b-ff522732e98c",
+    "installId": "25f6e749302d3a84134d4720b185cccb7474e9b826b2ce0205f10f799cf983d1"
   }
 }

@@ -1,10 +1,11 @@
 # =============================================================================
-# UNIFIED DOCKER COMPOSE - Works for both local and production
+# UNIFIED DOCKER COMPOSE - Strapi CMS + Next.js + PostgreSQL
 # =============================================================================
 # Instructions:
-# 1. Edit .env file and uncomment the environment you want (local or VPS)
+# 1. Make sure .env file is configured
 # 2. Run: docker-compose up -d --build
-# 3. That's it!
+# 3. Access Strapi admin at http://localhost:1337/admin
+# 4. Access web app at http://localhost:3000
 # =============================================================================
 
 services:
@@ -16,7 +17,7 @@ services:
       POSTGRES_USER: ${DATABASE_USERNAME}
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
     ports:
-      - "5432:5432"  # Exposed for DB tools
+      - "5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
     restart: always
@@ -26,35 +27,59 @@ services:
       timeout: 5s
       retries: 5
 
-  # Payload CMS (Production build)
+  # Strapi CMS
   cms:
     build:
       context: ./apps/cms
-      dockerfile: ../../payload.Dockerfile
+      dockerfile: Dockerfile
+      args:
+        - NODE_ENV=${NODE_ENV}
+        - APP_KEYS=${APP_KEYS}
+        - API_TOKEN_SALT=${API_TOKEN_SALT}
+        - ADMIN_JWT_SECRET=${ADMIN_JWT_SECRET}
+        - TRANSFER_TOKEN_SALT=${TRANSFER_TOKEN_SALT}
+        - ENCRYPTION_KEY=${ENCRYPTION_KEY}
+        - JWT_SECRET=${JWT_SECRET}
+      network: host
     env_file: .env
     environment:
       - NODE_ENV=${NODE_ENV}
-      - PAYLOAD_SECRET=${PAYLOAD_SECRET}
-      - DATABASE_URI=${DATABASE_URI}
-      - PAYLOAD_PUBLIC_SERVER_URL=${PAYLOAD_PUBLIC_SERVER_URL}
+      - APP_KEYS=${APP_KEYS}
+      - API_TOKEN_SALT=${API_TOKEN_SALT}
+      - ADMIN_JWT_SECRET=${ADMIN_JWT_SECRET}
+      - TRANSFER_TOKEN_SALT=${TRANSFER_TOKEN_SALT}
+      - ENCRYPTION_KEY=${ENCRYPTION_KEY}
+      - JWT_SECRET=${JWT_SECRET}
+      - DATABASE_CLIENT=postgres
+      - DATABASE_HOST=db
+      - DATABASE_PORT=5432
+      - DATABASE_NAME=${DATABASE_NAME}
+      - DATABASE_USERNAME=${DATABASE_USERNAME}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
+      - DATABASE_SSL=false
     ports:
-      - "1337:1337"  # Exposed for local access
+      - "1337:1337"
     depends_on:
       db:
         condition: service_healthy
     restart: always
+    volumes:
+      - ./apps/cms/public/uploads:/srv/app/public/uploads
 
-  # Next.js Web App (Production build)
+  # Next.js Web App
   web:
     build:
       context: ./apps/web
-      dockerfile: ../../web.Dockerfile
+      dockerfile: Dockerfile
       args:
-        - NEXT_PUBLIC_PAYLOAD_URL=${NEXT_PUBLIC_PAYLOAD_URL}
-        - PAYLOAD_API_URL=${PAYLOAD_API_URL}
+        - NEXT_PUBLIC_STRAPI_URL=${NEXT_PUBLIC_STRAPI_URL}
+        - STRAPI_API_URL=${STRAPI_API_URL}
     env_file: .env
+    environment:
+      - NEXT_PUBLIC_STRAPI_URL=${NEXT_PUBLIC_STRAPI_URL}
+      - STRAPI_API_URL=${STRAPI_API_URL}
     ports:
-      - "3000:3000"  # Exposed for local access
+      - "3000:3000"
     depends_on:
       - cms
     restart: always

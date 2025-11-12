@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { ChevronRightIcon, CalendarDaysIcon } from '@heroicons/react/24/outline';
-import { getArticles, getPayloadMediaUrl, type Article, type PublicationType } from '@/lib/api';
+import { getArticles, getStrapiMediaUrl, type Article, type PublicationType } from '@/lib/api';
 
 const PUBLICATION_TYPES: { value: PublicationType | 'all'; label: string }[] = [
   { value: 'all', label: 'Tous' },
@@ -199,7 +199,7 @@ export default function PublicationsSection() {
                       <div className="relative h-48 sm:h-56 overflow-hidden">
                         {publication.coverImage ? (
                           <img
-                            src={getPayloadMediaUrl(publication.coverImage)}
+                            src={getStrapiMediaUrl(publication.coverImage)}
                             alt={publication.title}
                             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                           />

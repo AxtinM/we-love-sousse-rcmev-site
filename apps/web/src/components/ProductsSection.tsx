@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { ShoppingBagIcon, TagIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import Image from 'next/image';
-import { getProducts, getPayloadMediaUrl, type Product, type Media } from '@/lib/api';
+import { getProducts, getStrapiMediaUrl, type Product } from '@/lib/api';
 
 const categoryLabels = {
   'tissage': 'Tissage',
@@ -57,8 +57,7 @@ export default function ProductsSection() {
     if (!product.images || product.images.length === 0) return '/images/default-product.jpg';
     
     const image = product.images[0];
-    // Use Payload media helper
-    return getPayloadMediaUrl(image);
+    return getStrapiMediaUrl(image.url);
   };
 
   if (loading) {

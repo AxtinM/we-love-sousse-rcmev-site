@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { ChevronRightIcon, CalendarDaysIcon, MagnifyingGlassIcon, ArrowLeftIcon, EyeIcon } from '@heroicons/react/24/outline';
 import Image from 'next/image';
-import { getArticles, getPayloadMediaUrl, type Article, type PublicationType } from '@/lib/api';
+import { getArticles, getStrapiMediaUrl, type Article, type PublicationType } from '@/lib/api';
 
 const PUBLICATION_TYPES: { value: PublicationType | 'all'; label: string }[] = [
   { value: 'all', label: 'Tous' },
@@ -274,7 +274,7 @@ export default function ArticlesPage() {
                         <div className="relative h-56 overflow-hidden">
                           {publication.coverImage ? (
                             <Image
-                              src={getPayloadMediaUrl(publication.coverImage) || ''}
+                              src={getStrapiMediaUrl(publication.coverImage) || ''}
                               alt={(typeof publication.coverImage === 'object' ? publication.coverImage.alt : null) || publication.title}
                               fill
                               className="object-cover transition-transform duration-300 group-hover:scale-110"

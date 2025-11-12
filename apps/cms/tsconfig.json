@@ -1,48 +1,43 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
-    "lib": [
-      "ES2020"
-    ],
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
-    "strict": true,
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "lib": ["ES2020"],
+    "target": "ES2019",
+    "strict": false,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "incremental": true,
     "esModuleInterop": true,
     "resolveJsonModule": true,
-    "noEmit": true,
-    "jsx": "preserve",
-    "allowImportingTsExtensions": true,
-    "isolatedModules": true,
+    "noEmitOnError": true,
+    "noImplicitThis": true,
     "outDir": "dist",
-    "rootDir": ".",
-    "paths": {
-      "@/*": [
-        "./src/*"
-      ],
-      "@payload-config": [
-        "./src/payload.config.ts"
-      ]
-    },
-    "allowJs": true,
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ]
+    "rootDir": "."
   },
   "include": [
-    "src/**/*.ts",
-    "src/**/*.tsx",
-    ".next/types/**/*.ts"
+    // Include root files
+    "./",
+    // Include all ts files
+    "./**/*.ts",
+    // Include all js files
+    "./**/*.js",
+    // Force the JSON files in the src folder to be included
+    "src/**/*.json"
   ],
+
   "exclude": [
-    "node_modules",
-    "dist",
-    ".cache",
-    ".tmp",
-    "build"
+    "node_modules/",
+    "build/",
+    "dist/",
+    ".cache/",
+    ".tmp/",
+
+    // Do not include admin files in the server compilation
+    "src/admin/",
+    // Do not include test files
+    "**/*.test.*",
+    // Do not include plugins in the server compilation
+    "src/plugins/**"
   ]
 }

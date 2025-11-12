@@ -1,42 +1,80 @@
 /**
- * Get the appropriate Payload API URL based on environment
+ * Get the appropriate Strapi API URL based on environment
  * - Server-side (Docker): uses internal service name
  * - Client-side (Browser): uses public URL
  */
-function getPayloadURL(): string {
-  // Server-side: use internal Docker service name
+function getStrapiURL(): string {
   if (typeof window === 'undefined') {
-    return process.env.PAYLOAD_URL || process.env.PAYLOAD_INTERNAL_URL || process.env.NEXT_PUBLIC_PAYLOAD_URL || 'http://cms:1337/api';
+    return process.env.STRAPI_URL || process.env.STRAPI_INTERNAL_URL || process.env.NEXT_PUBLIC_STRAPI_URL || 'http://cms:1337/api';
   }
-  
-  // Client-side: use public URL
-  return process.env.NEXT_PUBLIC_PAYLOAD_URL || 'http://localhost:1337/api';
+  return process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337/api';
 }
 
-// Use internal URL for server-side requests (Docker network) and external URL for client-side
-const PAYLOAD_API_URL = getPayloadURL();
-const PAYLOAD_API_TOKEN = process.env.PAYLOAD_TOKEN;
+const STRAPI_API_URL = getStrapiURL();
+const STRAPI_API_TOKEN = process.env.STRAPI_TOKEN;
 
-interface PayloadResponse<T> {
-  docs: T[];
-  totalDocs: number;
-  limit: number;
-  totalPages: number;
-  page: number;
-  pagingCounter: number;
-  hasPrevPage: boolean;
-  hasNextPage: boolean;
-  prevPage: number | null;
-  nextPage: number | null;
+interface StrapiResponse<T> {
+  data: T;
+  meta?: {
+    pagination?: {
+      page: number;
+      pageSize: number;
+      pageCount: number;
+      total: number;
+    };
+  };
 }
 
-interface PayloadAttributes {
-  id: string;
+interface StrapiAttributes {
+  id: number;
+  documentId: string;
   createdAt: string;
   updatedAt: string;
+  publishedAt?: string;
 }
 
-// Content Type Interfaces
+interface StrapiMedia {
+  id: number;
+  documentId: string;
+  name: string;
+  alternativeText?: string;
+  caption?: string;
+  width: number;
+  height: number;
+  formats?: {
+    thumbnail?: {
+      url: string;
+      width: number;
+      height: number;
+    };
+    small?: {
+      url: string;
+      width: number;
+      height: number;
+    };
+    medium?: {
+      url: string;
+      width: number;
+      height: number;
+    };
+    large?: {
+      url: string;
+      width: number;
+      height: number;
+    };
+  };
+  hash: string;
+  ext: string;
+  mime: string;
+  size: number;
+  url: string;
+  previewUrl?: string;
+  provider: string;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt?: string;
+}
+
 export type PublicationType = 
   | 'article' 
   | 'scientifique' 
@@ -47,51 +85,35 @@ export type PublicationType =
   | 'document' 
   | 'actualite';
 
-export interface Media {
-  id: string;
-  alt: string;
-  filename: string;
-  mimeType: string;
-  filesize: number;
-  width: number;
-  height: number;
-  url: string;
-  thumbnailURL?: string;
-  sizes?: {
-    thumbnail?: {
-      url: string;
-      width: number;
-      height: number;
-    };
-    card?: {
-      url: string;
-      width: number;
-      height: number;
-    };
-    featured?: {
-      url: string;
-      width: number;
-      height: number;
-    };
-  };
-}
-
-export interface Article extends PayloadAttributes {
+export interface Article extends StrapiAttributes {
   title: string;
   slug: string;
   publicationType: PublicationType;
   excerpt?: string;
-  content?: any; // Lexical rich text JSON
-  coverImage?: Media | string;
+  content?: string;
+  coverImage?: {
+    data?: {
+      attributes: {
+        url: string;
+        alternativeText?: string;
+      };
+    };
+  };
   seo?: {
     metaTitle?: string;
     metaDescription?: string;
-    ogImage?: Media | string;
+    ogImage?: {
+      data?: {
+        attributes: {
+          url: string;
+          alternativeText?: string;
+        };
+      };
+    };
   };
-  _status?: 'draft' | 'published';
 }
 
-export interface PressCoverage extends PayloadAttributes {
+export interface PressCoverage extends StrapiAttributes {
   title: string;
   source?: string;
   url: string;
@@ -99,56 +121,64 @@ export interface PressCoverage extends PayloadAttributes {
   excerpt?: string;
   publishedDate?: string;
   order: number;
-  thumbnail?: Media | string;
-  _status?: 'draft' | 'published';
+  thumbnail?: {
+    data?: {
+      attributes: {
+        url: string;
+        alternativeText?: string;
+      };
+    };
+  };
 }
 
-export interface Partner extends PayloadAttributes {
+export interface Partner extends StrapiAttributes {
   name: string;
   url?: string;
   order: number;
-  logo?: Media | string;
-  _status?: 'draft' | 'published';
+  logo?: {
+    data?: {
+      attributes: {
+        url: string;
+        alternativeText?: string;
+      };
+    };
+  };
 }
 
-export interface Product extends PayloadAttributes {
+export interface Product extends StrapiAttributes {
   name: string;
   slug: string;
-  description?: any; // Lexical rich text JSON
+  description?: string;
   price: number;
   category: 'tissage' | 'huile-essentielle' | 'patisserie' | 'produit-du-terroir' | 'autre';
-  images: (Media | string)[];
+  images?: StrapiMedia[];
   productionCenter?: string;
   region?: string;
   inStock: boolean;
   featured: boolean;
-  _status?: 'draft' | 'published';
 }
 
-export interface ProjectStatistics {
+export interface ProjectStatistic extends StrapiAttributes {
   directBeneficiaries: number;
   appliedResearch: number;
   womenReached: number;
   activities: number;
   additionalStats?: any;
-  updatedAt: string;
 }
 
-// API Functions
 async function fetchAPI<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-  const url = `${PAYLOAD_API_URL}${endpoint}`;
+  const url = `${STRAPI_API_URL}${endpoint}`;
 
   console.log('Fetching:', url);
-  console.log('Token exists:', !!PAYLOAD_API_TOKEN);
+  console.log('Token exists:', !!STRAPI_API_TOKEN);
 
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     ...options.headers as Record<string, string>,
   };
 
-  // Add auth header if token exists
-  if (PAYLOAD_API_TOKEN) {
-    headers.Authorization = `Bearer ${PAYLOAD_API_TOKEN}`;
+  if (STRAPI_API_TOKEN && !endpoint.includes('/partners')) {
+    headers.Authorization = `Bearer ${STRAPI_API_TOKEN}`;
   }
 
   const response = await fetch(url, {
@@ -164,12 +194,11 @@ async function fetchAPI<T>(endpoint: string, options: RequestInit = {}): Promise
   return response.json();
 }
 
-// Content fetching functions
 export async function getArticles(type?: PublicationType): Promise<Article[]> {
   try {
-    const typeFilter = type ? `&where[publicationType][equals]=${type}` : '';
-    const response = await fetchAPI<PayloadResponse<Article>>(`/articles?depth=2&sort=-createdAt${typeFilter}`);
-    return response.docs || [];
+    const typeFilter = type ? `&filters[publicationType][$eq]=${type}` : '';
+    const response = await fetchAPI<StrapiResponse<Article[]>>(`/articles?populate=*&sort=publishedAt:desc${typeFilter}`);
+    return response.data || [];
   } catch (error) {
     console.warn('Failed to fetch articles:', error);
     return [];
@@ -178,8 +207,8 @@ export async function getArticles(type?: PublicationType): Promise<Article[]> {
 
 export async function getArticleBySlug(slug: string): Promise<Article | null> {
   try {
-    const response = await fetchAPI<PayloadResponse<Article>>(`/articles?where[slug][equals]=${slug}&depth=2`);
-    return response.docs?.[0] || null;
+    const response = await fetchAPI<StrapiResponse<Article[]>>(`/articles?filters[slug][$eq]=${slug}&populate=*`);
+    return response.data?.[0] || null;
   } catch (error) {
     console.warn('Failed to fetch article by slug:', error);
     return null;
@@ -188,8 +217,8 @@ export async function getArticleBySlug(slug: string): Promise<Article | null> {
 
 export async function getPressCoverage(): Promise<PressCoverage[]> {
   try {
-    const response = await fetchAPI<PayloadResponse<PressCoverage>>('/press-coverages?depth=2&sort=order');
-    return response.docs || [];
+    const response = await fetchAPI<StrapiResponse<PressCoverage[]>>('/press-coverages?populate=*&sort=order:asc');
+    return response.data || [];
   } catch (error) {
     console.warn('Failed to fetch press coverage:', error);
     return [];
@@ -198,20 +227,19 @@ export async function getPressCoverage(): Promise<PressCoverage[]> {
 
 export async function getPartners(): Promise<Partner[]> {
   try {
-    const response = await fetchAPI<PayloadResponse<Partner>>('/partners?depth=2&sort=order');
-    return response.docs || [];
+    const response = await fetchAPI<StrapiResponse<Partner[]>>('/partners?populate=*&sort=order:asc');
+    return response.data || [];
   } catch (error) {
     console.warn('Failed to fetch partners:', error);
-    // Return empty array if API fails, so the app still works
     return [];
   }
 }
 
 export async function getProducts(options?: { featured?: boolean }): Promise<Product[]> {
   try {
-    const featuredFilter = options?.featured ? '&where[featured][equals]=true' : '';
-    const response = await fetchAPI<PayloadResponse<Product>>(`/products?depth=2&sort=-createdAt${featuredFilter}`);
-    return response.docs || [];
+    const featuredFilter = options?.featured ? '&filters[featured][$eq]=true' : '';
+    const response = await fetchAPI<StrapiResponse<Product[]>>(`/products?populate=*&sort=createdAt:desc${featuredFilter}`);
+    return response.data || [];
   } catch (error) {
     console.warn('Failed to fetch products:', error);
     return [];
@@ -220,48 +248,36 @@ export async function getProducts(options?: { featured?: boolean }): Promise<Pro
 
 export async function getProductBySlug(slug: string): Promise<Product | null> {
   try {
-    const response = await fetchAPI<PayloadResponse<Product>>(`/products?where[slug][equals]=${slug}&depth=2`);
-    return response.docs?.[0] || null;
+    const response = await fetchAPI<StrapiResponse<Product[]>>(`/products?filters[slug][$eq]=${slug}&populate=*`);
+    return response.data?.[0] || null;
   } catch (error) {
     console.warn('Failed to fetch product by slug:', error);
     return null;
   }
 }
 
-export async function getProjectStatistics(): Promise<ProjectStatistics | null> {
+export async function getProjectStatistics(): Promise<ProjectStatistic | null> {
   try {
-    const response = await fetchAPI<ProjectStatistics>('/globals/project-statistics');
-    return response;
+    const response = await fetchAPI<StrapiResponse<ProjectStatistic>>('/project-statistics');
+    if (Array.isArray(response.data)) {
+      return response.data[0] || null;
+    }
+    return response.data || null;
   } catch (error) {
     console.warn('Failed to fetch project statistics:', error);
     return null;
   }
 }
 
-// Helper function to get full URL for Payload media
-export function getPayloadMediaUrl(mediaOrUrl?: Media | string): string {
-  if (!mediaOrUrl) return '';
-  
-  const baseUrl = typeof window === 'undefined' 
-    ? (process.env.PAYLOAD_API_URL || 'http://cms:1337').replace('/api', '')
-    : (process.env.NEXT_PUBLIC_PAYLOAD_URL || 'http://localhost:1337').replace('/api', '');
-  
-  // If it's already a full URL string, return it
-  if (typeof mediaOrUrl === 'string') {
-    if (mediaOrUrl.startsWith('http')) return mediaOrUrl;
-    // If it's a relative path, make it absolute
-    return `${baseUrl}${mediaOrUrl}`;
-  }
-  
-  // If it's a Media object, get the URL
-  const url = mediaOrUrl.url;
+export function getStrapiMediaUrl(url?: string): string {
   if (!url) return '';
-  
   if (url.startsWith('http')) return url;
   
-  // Return full URL for Next.js Image optimization
-  return `${baseUrl}${url}`;
+  if (typeof window === 'undefined') {
+    return `http://cms:1337${url}`;
+  }
+  
+  return `https://cms.rcmev.com${url}`;
 }
 
-// Export the getPayloadURL function for use in components
-export { getPayloadURL };
+export { getStrapiURL };

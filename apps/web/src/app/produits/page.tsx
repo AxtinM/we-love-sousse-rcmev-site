@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { ArrowLeftIcon, ShoppingBagIcon, TagIcon, MapPinIcon } from '@heroicons/react/24/outline';
 import Image from 'next/image';
-import { getProducts, getPayloadMediaUrl, type Product } from '@/lib/api';
+import { getProducts, getStrapiMediaUrl, type Product } from '@/lib/api';
 
 const categoryLabels = {
   'tissage': 'Tissage',
@@ -75,7 +75,7 @@ export default function ProductsPage() {
 
   const getImageUrl = (product: Product) => {
     if (!product.images || product.images.length === 0) return '/images/default-product.jpg';
-    return getPayloadMediaUrl(product.images[0]) || '/images/default-product.jpg';
+    return getStrapiMediaUrl(product.images[0].url) || '/images/default-product.jpg';
   };
 
   const formatPrice = (price: number) => {
@@ -240,7 +240,7 @@ export default function ProductsPage() {
                         <div className="relative h-64 overflow-hidden">
                           <Image
                             src={getImageUrl(product)}
-                            alt={(typeof product.images?.[0] === 'object' ? product.images[0].alt : null) || product.name}
+                            alt={product.images?.[0]?.alternativeText || product.name}
                             fill
                             className="object-cover transition-transform duration-300 group-hover:scale-110"
                           />

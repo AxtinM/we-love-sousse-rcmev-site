@@ -8,7 +8,7 @@ import ReactMarkdown from 'react-markdown';
 import { ArrowLeftIcon, ShoppingBagIcon, MapPinIcon, TagIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
 import ContactModal from '@/components/ContactModal';
-import { getProductBySlug, getProducts, getPayloadMediaUrl, type Product } from '@/lib/api';
+import { getProductBySlug, getProducts, getStrapiMediaUrl, type Product } from '@/lib/api';
 
 const categoryLabels = {
   'tissage': 'Tissage',
@@ -65,7 +65,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
     }
   };
 
-  const fetchRelatedProducts = async (category: string, currentProductId: string) => {
+  const fetchRelatedProducts = async (category: string, currentProductId: number) => {
     try {
       const allProducts = await getProducts();
       const filtered = allProducts.filter(p => p.category === category && p.id !== currentProductId).slice(0, 4);
@@ -77,7 +77,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
 
   const getImageUrl = (image: any) => {
     if (!image) return '/images/default-product.jpg';
-    return getPayloadMediaUrl(image) || '/images/default-product.jpg';
+    return getStrapiMediaUrl(image.url) || '/images/default-product.jpg';
   };
 
   const formatPrice = (price: number) => {

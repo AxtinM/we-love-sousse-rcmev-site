@@ -5,9 +5,7 @@ export default ({ env }) => ({
     cookie: {
       name: 'strapi-session',
       httpOnly: true,
-      secure: true,
       sameSite: 'lax',
-      domain: 'cms.rcmev.com',
       path: '/',
     },
   },

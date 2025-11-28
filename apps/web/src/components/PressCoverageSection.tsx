@@ -35,8 +35,8 @@ export default function PressCoverageSection() {
   };
 
   const getThumbnailUrl = (coverage: PressCoverage) => {
-    if (coverage.thumbnail) {
-      return getStrapiMediaUrl(coverage.thumbnail);
+    if (coverage.thumbnail?.data?.attributes?.url) {
+      return getStrapiMediaUrl(coverage.thumbnail.data.attributes.url);
     }
     return null;
   };

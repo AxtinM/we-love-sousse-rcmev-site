@@ -1,12 +1,23 @@
 /**
  * Get the appropriate Strapi API URL based on environment
  * - Server-side (Docker): uses internal service name
- * - Client-side (Browser): uses public URL
+ * - Client-side (Browser): detects environment from hostname
  */
 function getStrapiURL(): string {
   if (typeof window === 'undefined') {
     return process.env.STRAPI_URL || process.env.STRAPI_INTERNAL_URL || process.env.NEXT_PUBLIC_STRAPI_URL || 'http://cms:1337/api';
   }
+  
+  const hostname = window.location.hostname;
+  
+  if (hostname === 'localhost' || hostname === '127.0.0.1') {
+    return 'http://localhost:1337/api';
+  }
+  
+  if (hostname === 'rcmev.com' || hostname.endsWith('.rcmev.com')) {
+    return 'https://cms.rcmev.com/api';
+  }
+  
   return process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337/api';
 }
 
@@ -275,6 +286,12 @@ export function getStrapiMediaUrl(url?: string): string {
   
   if (typeof window === 'undefined') {
     return `http://cms:1337${url}`;
+  }
+  
+  const hostname = window.location.hostname;
+  
+  if (hostname === 'localhost' || hostname === '127.0.0.1') {
+    return `http://localhost:1337${url}`;
   }
   
   return `https://cms.rcmev.com${url}`;

@@ -7,6 +7,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import ReactMarkdown from 'react-markdown';
 import { CalendarDaysIcon, ChevronLeftIcon, ClockIcon } from '@heroicons/react/24/outline';
+import { getClientStrapiURL, getClientStrapiBaseURL } from '@/lib/utils';
 
 interface Article {
   id: number;
@@ -40,8 +41,9 @@ export default function ArticlePage() {
   useEffect(() => {
     const fetchArticle = async () => {
       try {
+        const apiUrl = getClientStrapiURL();
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_STRAPI_URL}/articles?populate=*&filters[slug][$eq]=${params.slug}`
+          `${apiUrl}/articles?populate=*&filters[slug][$eq]=${params.slug}`
         );
         
         if (response.ok) {
@@ -79,7 +81,8 @@ export default function ArticlePage() {
     if (!article.coverImage) return null;
     
     const formats = article.coverImage.formats;
-    return `${process.env.NEXT_PUBLIC_STRAPI_URL?.replace('/api', '') || 'http://localhost:1337'}${
+    const baseUrl = getClientStrapiBaseURL();
+    return `${baseUrl}${
       formats.large?.url || formats.medium?.url || formats.small?.url || article.coverImage.url
     }`;
   };

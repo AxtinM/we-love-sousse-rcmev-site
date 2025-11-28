@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+function getServerStrapiURL(): string {
+  return process.env.STRAPI_URL || process.env.STRAPI_INTERNAL_URL || 'http://cms:1337';
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -13,8 +17,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Submit to Strapi
-    const strapiResponse = await fetch(`${process.env.NEXT_PUBLIC_STRAPI_URL?.replace('/api', '') || 'http://localhost:1337'}/api/contacts`, {
+    // Submit to Strapi using server-side URL
+    const strapiBaseUrl = getServerStrapiURL();
+    const strapiResponse = await fetch(`${strapiBaseUrl}/api/contacts`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

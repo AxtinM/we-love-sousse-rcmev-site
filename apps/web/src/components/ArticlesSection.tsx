@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { ChevronRightIcon, CalendarDaysIcon } from '@heroicons/react/24/outline';
+import { getClientStrapiURL, getClientStrapiBaseURL } from '@/lib/utils';
 
 interface Article {
   id: number;
@@ -47,7 +48,8 @@ export default function ArticlesSection() {
   useEffect(() => {
     const fetchArticles = async () => {
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_STRAPI_URL}/articles?populate=*&pagination[limit]=3&sort=publishedAt:desc`);
+        const apiUrl = getClientStrapiURL();
+        const response = await fetch(`${apiUrl}/articles?populate=*&pagination[limit]=3&sort=publishedAt:desc`);
         if (response.ok) {
           const data: ArticlesResponse = await response.json();
           setArticles(data.data || []);
@@ -57,7 +59,7 @@ export default function ArticlesSection() {
         }
       } catch (error) {
         console.error('Error fetching articles:', error);
-        setArticles([]); // Set empty array to prevent undefined errors
+        setArticles([]);
       } finally {
         setLoading(false);
       }
@@ -78,7 +80,8 @@ export default function ArticlesSection() {
     if (!article.coverImage) return '/images/default-article.jpg';
     
     const formats = article.coverImage.formats;
-    return `${process.env.NEXT_PUBLIC_STRAPI_URL?.replace('/api', '') || 'http://localhost:1337'}${
+    const baseUrl = getClientStrapiBaseURL();
+    return `${baseUrl}${
       formats.medium?.url || formats.large?.url || formats.small?.url || article.coverImage.url
     }`;
   };

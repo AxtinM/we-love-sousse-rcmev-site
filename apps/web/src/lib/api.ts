@@ -101,15 +101,11 @@ export interface Article extends StrapiAttributes {
   slug: string;
   publicationType: PublicationType;
   excerpt?: string;
+  resume?: string;
+  numero?: string;
+  link?: string;
   content?: string;
-  coverImage?: {
-    data?: {
-      attributes: {
-        url: string;
-        alternativeText?: string;
-      };
-    };
-  };
+  coverImage?: unknown;
   seo?: {
     metaTitle?: string;
     metaDescription?: string;
@@ -280,7 +276,50 @@ export async function getProjectStatistics(): Promise<ProjectStatistic | null> {
   }
 }
 
-export function getStrapiMediaUrl(url?: string): string {
+const getMediaNode = (media?: unknown): Record<string, unknown> | null => {
+  if (!media || typeof media !== 'object') {
+    return null;
+  }
+
+  const directNode = media as Record<string, unknown>;
+
+  if (typeof directNode.url === 'string') {
+    return directNode;
+  }
+
+  const attributes = directNode.attributes;
+  if (attributes && typeof attributes === 'object') {
+    const attributesNode = attributes as Record<string, unknown>;
+    if (typeof attributesNode.url === 'string') {
+      return attributesNode;
+    }
+  }
+
+  const data = directNode.data;
+  if (!data || typeof data !== 'object') {
+    return null;
+  }
+
+  const dataNode = data as Record<string, unknown>;
+  if (typeof dataNode.url === 'string') {
+    return dataNode;
+  }
+
+  const dataAttributes = dataNode.attributes;
+  if (dataAttributes && typeof dataAttributes === 'object') {
+    const dataAttributesNode = dataAttributes as Record<string, unknown>;
+    if (typeof dataAttributesNode.url === 'string') {
+      return dataAttributesNode;
+    }
+  }
+
+  return null;
+};
+
+export function getStrapiMediaUrl(media?: string | unknown): string {
+  const url =
+    typeof media === 'string' ? media : (getMediaNode(media)?.url as string | undefined);
+
   if (!url) return '';
   if (url.startsWith('http')) return url;
   
@@ -295,6 +334,17 @@ export function getStrapiMediaUrl(url?: string): string {
   }
   
   return `https://cms.rcmev.com${url}`;
+}
+
+export function getStrapiMediaAltText(media?: unknown, fallback = ''): string {
+  const mediaNode = getMediaNode(media);
+  const altText = mediaNode?.alternativeText;
+
+  if (typeof altText === 'string' && altText.trim().length > 0) {
+    return altText;
+  }
+
+  return fallback;
 }
 
 export { getStrapiURL };

@@ -4,7 +4,13 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { ChevronRightIcon, CalendarDaysIcon } from '@heroicons/react/24/outline';
-import { getArticles, getStrapiMediaUrl, type Article, type PublicationType } from '@/lib/api';
+import {
+  getArticles,
+  getStrapiMediaUrl,
+  getStrapiMediaAltText,
+  type Article,
+  type PublicationType,
+} from '@/lib/api';
 
 const PUBLICATION_TYPES: { value: PublicationType | 'all'; label: string }[] = [
   { value: 'all', label: 'Tous' },
@@ -185,65 +191,78 @@ export default function PublicationsSection() {
         ) : (
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 sm:gap-8 mb-12 sm:mb-16">
-              {publications.map((publication, index) => (
-                <motion.article
-                  key={publication.id}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.6, delay: index * 0.15 }}
-                  className="group"
-                >
-                  <Link href={`/articles/${publication.slug}`}>
-                    <div className="bg-white rounded-2xl sm:rounded-3xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3 border border-gray-100/50">
-                      <div className="relative h-48 sm:h-56 overflow-hidden">
-                        {publication.coverImage ? (
-                          <img
-                            src={getStrapiMediaUrl(publication.coverImage)}
-                            alt={publication.title}
-                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                          />
-                        ) : (
-                          <div className="w-full h-full bg-gradient-to-br from-emerald-500 to-cyan-500 flex items-center justify-center">
-                            <span className="text-6xl">📄</span>
+              {publications.map((publication, index) => {
+                const imageUrl = getStrapiMediaUrl(publication.coverImage);
+                const imageAlt = getStrapiMediaAltText(publication.coverImage, publication.title);
+                const isNewsletter = publication.publicationType === 'newsletter';
+                const summary = isNewsletter ? publication.resume || publication.excerpt : publication.excerpt;
+
+                return (
+                  <motion.article
+                    key={publication.id}
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6, delay: index * 0.15 }}
+                    className="group"
+                  >
+                    <Link href={`/articles/${publication.slug}`}>
+                      <div className="bg-white rounded-2xl sm:rounded-3xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3 border border-gray-100/50">
+                        <div className="relative h-48 sm:h-56 overflow-hidden">
+                          {imageUrl ? (
+                            <img
+                              src={imageUrl}
+                              alt={imageAlt}
+                              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                            />
+                          ) : (
+                            <div className="w-full h-full bg-gradient-to-br from-emerald-500 to-cyan-500 flex items-center justify-center">
+                              <span className="text-6xl">📄</span>
+                            </div>
+                          )}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                          <div className="absolute top-3 sm:top-4 left-3 sm:left-4">
+                            <div className={`backdrop-blur-sm px-2 sm:px-3 py-1 sm:py-1.5 rounded-full ${getPublicationTypeColor(publication.publicationType)}`}>
+                              <span className="text-xs font-medium">{getPublicationTypeLabel(publication.publicationType)}</span>
+                            </div>
                           </div>
-                        )}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                        <div className="absolute top-3 sm:top-4 left-3 sm:left-4">
-                          <div className={`backdrop-blur-sm px-2 sm:px-3 py-1 sm:py-1.5 rounded-full ${getPublicationTypeColor(publication.publicationType)}`}>
-                            <span className="text-xs font-medium">{getPublicationTypeLabel(publication.publicationType)}</span>
+                        </div>
+
+                        <div className="p-6 sm:p-8">
+                          <div className="flex items-center text-xs sm:text-sm text-gray-500 mb-3 sm:mb-4">
+                            <CalendarDaysIcon className="h-3 w-3 sm:h-4 sm:w-4 mr-2 text-emerald-500" />
+                            {formatDate(publication.createdAt)}
+                          </div>
+
+                          {isNewsletter && publication.numero && (
+                            <div className="inline-flex items-center mb-3 sm:mb-4 px-3 py-1 rounded-full bg-cyan-50 text-cyan-700 text-xs sm:text-sm font-semibold border border-cyan-100">
+                              Numéro {publication.numero}
+                            </div>
+                          )}
+
+                          <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-3 sm:mb-4 group-hover:text-emerald-700 transition-colors duration-300 line-clamp-2 leading-tight">
+                            {publication.title}
+                          </h3>
+
+                          {summary && (
+                            <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6 line-clamp-3 leading-relaxed">
+                              {summary}
+                            </p>
+                          )}
+
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center text-sm sm:text-base text-emerald-600 font-semibold group-hover:text-emerald-700 transition-colors duration-300">
+                              {isNewsletter ? 'Voir la newsletter' : 'Lire la suite'}
+                              <ChevronRightIcon className="h-3 w-3 sm:h-4 sm:w-4 ml-2 transition-transform duration-300 group-hover:translate-x-2" />
+                            </div>
+                            <div className="w-8 sm:w-12 h-1 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                           </div>
                         </div>
                       </div>
-                      
-                      <div className="p-6 sm:p-8">
-                        <div className="flex items-center text-xs sm:text-sm text-gray-500 mb-3 sm:mb-4">
-                          <CalendarDaysIcon className="h-3 w-3 sm:h-4 sm:w-4 mr-2 text-emerald-500" />
-                          {formatDate(publication.createdAt)}
-                        </div>
-                        
-                        <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-3 sm:mb-4 group-hover:text-emerald-700 transition-colors duration-300 line-clamp-2 leading-tight">
-                          {publication.title}
-                        </h3>
-                        
-                        {publication.excerpt && (
-                          <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6 line-clamp-3 leading-relaxed">
-                            {publication.excerpt}
-                          </p>
-                        )}
-                        
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center text-sm sm:text-base text-emerald-600 font-semibold group-hover:text-emerald-700 transition-colors duration-300">
-                            Lire la suite
-                            <ChevronRightIcon className="h-3 w-3 sm:h-4 sm:w-4 ml-2 transition-transform duration-300 group-hover:translate-x-2" />
-                          </div>
-                          <div className="w-8 sm:w-12 h-1 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                        </div>
-                      </div>
-                    </div>
-                  </Link>
-                </motion.article>
-              ))}
+                    </Link>
+                  </motion.article>
+                );
+              })}
             </div>
 
             <motion.div

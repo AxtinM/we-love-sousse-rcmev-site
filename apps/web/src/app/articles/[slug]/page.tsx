@@ -6,91 +6,70 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
 import ReactMarkdown from 'react-markdown';
-import { CalendarDaysIcon, ChevronLeftIcon, ClockIcon } from '@heroicons/react/24/outline';
-import { getClientStrapiURL, getClientStrapiBaseURL } from '@/lib/utils';
-
-interface Article {
-  id: number;
-  documentId: string;
-  title: string;
-  slug: string;
-  excerpt: string;
-  content: string;
-  publishedAt: string;
-  createdAt: string;
-  updatedAt: string;
-  coverImage: {
-    id: number;
-    url: string;
-    alternativeText: string;
-    formats: {
-      large?: { url: string };
-      medium?: { url: string };
-      small?: { url: string };
-      thumbnail?: { url: string };
-    };
-  };
-}
+import {
+  ArrowTopRightOnSquareIcon,
+  CalendarDaysIcon,
+  ChevronLeftIcon,
+  ClockIcon,
+} from '@heroicons/react/24/outline';
+import {
+  getArticleBySlug,
+  getStrapiMediaAltText,
+  getStrapiMediaUrl,
+  type Article,
+} from '@/lib/api';
 
 export default function ArticlePage() {
-  const params = useParams();
+  const params = useParams<{ slug: string }>();
   const [article, setArticle] = useState<Article | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    const slug = Array.isArray(params.slug) ? params.slug[0] : params.slug;
+
+    if (!slug) {
+      setError('Publication non trouvée');
+      setLoading(false);
+      return;
+    }
+
     const fetchArticle = async () => {
+      setLoading(true);
       try {
-        const apiUrl = getClientStrapiURL();
-        const response = await fetch(
-          `${apiUrl}/articles?populate=*&filters[slug][$eq]=${params.slug}`
-        );
-        
-        if (response.ok) {
-          const data = await response.json();
-          if (data.data && data.data.length > 0) {
-            setArticle(data.data[0]);
-          } else {
-            setError('Article non trouvé');
-          }
-        } else {
-          setError('Erreur lors du chargement de l\'article');
+        const data = await getArticleBySlug(slug);
+        if (!data) {
+          setError('Publication non trouvée');
+          setArticle(null);
+          return;
         }
-      } catch (err) {
-        console.error('Error fetching article:', err);
-        setError('Erreur lors du chargement de l\'article');
+
+        setArticle(data);
+        setError(null);
+      } catch (fetchError) {
+        console.error('Error fetching publication:', fetchError);
+        setError('Erreur lors du chargement de la publication');
+        setArticle(null);
       } finally {
         setLoading(false);
       }
     };
 
-    if (params.slug) {
-      fetchArticle();
-    }
+    fetchArticle();
   }, [params.slug]);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('fr-FR', {
       year: 'numeric',
       month: 'long',
-      day: 'numeric'
+      day: 'numeric',
     });
-  };
-
-  const getImageUrl = (article: Article) => {
-    if (!article.coverImage) return null;
-    
-    const formats = article.coverImage.formats;
-    const baseUrl = getClientStrapiBaseURL();
-    return `${baseUrl}${
-      formats.large?.url || formats.medium?.url || formats.small?.url || article.coverImage.url
-    }`;
   };
 
   const estimateReadTime = (content: string) => {
     const wordsPerMinute = 200;
-    const words = content.split(' ').length;
-    return Math.ceil(words / wordsPerMinute);
+    const words = content.trim().split(/\s+/).length;
+    return Math.max(1, Math.ceil(words / wordsPerMinute));
   };
 
   if (loading) {
@@ -115,43 +94,46 @@ export default function ArticlePage() {
 
   if (error || !article) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white flex items-center justify-center px-4">
         <div className="text-center">
-          <h1 className="text-4xl font-medium text-gray-900 mb-4">Article non trouvé</h1>
-          <p className="text-gray-600 mb-8">Désolé, cet article n'existe pas ou a été supprimé.</p>
+          <h1 className="text-3xl sm:text-4xl font-semibold text-gray-900 mb-4">Publication non trouvée</h1>
+          <p className="text-gray-600 mb-8">Désolé, cette publication n'existe pas ou a été supprimée.</p>
           <Link
             href="/articles"
-            className="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-full hover:bg-blue-700 transition-colors"
+            className="inline-flex items-center px-6 py-3 bg-emerald-600 text-white font-medium rounded-full hover:bg-emerald-700 transition-colors"
           >
             <ChevronLeftIcon className="h-5 w-5 mr-2" />
-            Retour aux articles
+            Retour aux publications
           </Link>
         </div>
       </div>
     );
   }
 
-  const imageUrl = getImageUrl(article);
+  const imageUrl = getStrapiMediaUrl(article.coverImage);
+  const imageAlt = getStrapiMediaAltText(article.coverImage, article.title);
+  const publishedDate = article.publishedAt || article.createdAt;
+  const isNewsletter = article.publicationType === 'newsletter';
+  const summary = isNewsletter ? article.resume || article.excerpt : article.excerpt;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
-      {/* Hero Section */}
       <section className="relative">
         {imageUrl && (
-          <div className="h-96 lg:h-[500px] relative overflow-hidden">
+          <div className="h-72 sm:h-80 lg:h-[500px] relative overflow-hidden">
             <Image
               src={imageUrl}
-              alt={article.coverImage?.alternativeText || article.title}
+              alt={imageAlt}
               fill
               className="object-cover"
               priority
               sizes="100vw"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/25 to-transparent"></div>
           </div>
         )}
-        
-        <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
+
+        <div className={`${imageUrl ? 'absolute bottom-0 left-0 right-0' : ''} p-6 sm:p-8 ${imageUrl ? 'text-white' : 'text-gray-900'}`}>
           <div className="max-w-4xl mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -160,21 +142,32 @@ export default function ArticlePage() {
             >
               <Link
                 href="/articles"
-                className="inline-flex items-center text-white/80 hover:text-white transition-colors mb-4"
+                className={`inline-flex items-center transition-colors mb-4 ${imageUrl ? 'text-white/85 hover:text-white' : 'text-emerald-700 hover:text-emerald-800'}`}
               >
                 <ChevronLeftIcon className="h-5 w-5 mr-2" />
-                Retour aux articles
+                Retour aux publications
               </Link>
-              
-              <h1 className="text-4xl lg:text-5xl font-medium mb-4 leading-tight">
-                {article.title}
-              </h1>
-              
-              <div className="flex items-center space-x-6 text-white/90">
-                <div className="flex items-center">
-                  <CalendarDaysIcon className="h-5 w-5 mr-2" />
-                  {formatDate(article.publishedAt)}
-                </div>
+
+              <div className="flex flex-wrap items-center gap-2 mb-4">
+                <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs sm:text-sm font-semibold ${imageUrl ? 'bg-white/20 text-white border border-white/30' : 'bg-emerald-100 text-emerald-800 border border-emerald-200'}`}>
+                  {isNewsletter ? 'Newsletter' : 'Publication'}
+                </span>
+                {isNewsletter && article.numero && (
+                  <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs sm:text-sm font-semibold ${imageUrl ? 'bg-cyan-200/30 text-cyan-50 border border-cyan-100/40' : 'bg-cyan-50 text-cyan-700 border border-cyan-100'}`}>
+                    Numéro {article.numero}
+                  </span>
+                )}
+              </div>
+
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-semibold mb-4 leading-tight">{article.title}</h1>
+
+              <div className={`flex flex-wrap items-center gap-4 sm:gap-6 text-sm sm:text-base ${imageUrl ? 'text-white/90' : 'text-gray-600'}`}>
+                {publishedDate && (
+                  <div className="flex items-center">
+                    <CalendarDaysIcon className="h-5 w-5 mr-2" />
+                    {formatDate(publishedDate)}
+                  </div>
+                )}
                 {article.content && (
                   <div className="flex items-center">
                     <ClockIcon className="h-5 w-5 mr-2" />
@@ -187,9 +180,27 @@ export default function ArticlePage() {
         </div>
       </section>
 
-      {/* Article Content */}
-      <section className="py-16">
+      <section className="py-12 sm:py-16">
         <div className="max-w-4xl mx-auto px-4">
+          {isNewsletter && article.link && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="mb-8"
+            >
+              <a
+                href={article.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center sm:justify-start w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-cyan-600 to-teal-600 text-white font-semibold rounded-xl hover:from-cyan-700 hover:to-teal-700 transition-all duration-300"
+              >
+                Ouvrir la newsletter
+                <ArrowTopRightOnSquareIcon className="h-5 w-5 ml-2" />
+              </a>
+            </motion.div>
+          )}
+
           <motion.article
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -212,16 +223,15 @@ export default function ArticlePage() {
               prose-pre:bg-gray-900 prose-pre:text-gray-100 prose-pre:rounded-xl prose-pre:p-6 prose-pre:my-6
               prose-img:rounded-2xl prose-img:shadow-lg prose-img:my-8"
           >
-            {article.excerpt && (
-              <div className="text-xl text-gray-600 font-medium leading-relaxed mb-8 p-6 bg-emerald-50 rounded-2xl border-l-4 border-emerald-500 not-prose">
-                {article.excerpt}
+            {summary && (
+              <div className="text-lg sm:text-xl text-gray-600 font-medium leading-relaxed mb-8 p-5 sm:p-6 bg-emerald-50 rounded-2xl border-l-4 border-emerald-500 not-prose">
+                {summary}
               </div>
             )}
-            
+
             {article.content ? (
               <ReactMarkdown
                 components={{
-                  // Custom rendering for images to use Next.js Image component
                   img: ({ node, ...props }) => (
                     <img
                       {...props}
@@ -235,12 +245,15 @@ export default function ArticlePage() {
               </ReactMarkdown>
             ) : (
               <div className="text-gray-600 text-center py-8 not-prose">
-                <p>Le contenu de cet article sera bientôt disponible.</p>
+                <p>
+                  {isNewsletter
+                    ? 'Le contenu détaillé de cette newsletter n\'est pas encore disponible ici.'
+                    : 'Le contenu de cette publication sera bientôt disponible.'}
+                </p>
               </div>
             )}
           </motion.article>
-          
-          {/* Back to Articles Button */}
+
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -252,7 +265,7 @@ export default function ArticlePage() {
               className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-medium rounded-full hover:from-emerald-700 hover:to-teal-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
             >
               <ChevronLeftIcon className="h-5 w-5 mr-2" />
-              Découvrir plus d'articles
+              Retour à toutes les publications
             </Link>
           </motion.div>
         </div>

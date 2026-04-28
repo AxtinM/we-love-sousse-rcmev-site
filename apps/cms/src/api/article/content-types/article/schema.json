@@ -16,6 +16,9 @@
       "type": "string",
       "required": true
     },
+    "numero": {
+      "type": "string"
+    },
     "slug": {
       "type": "uid",
       "targetField": "title",
@@ -44,6 +47,12 @@
     },
     "excerpt": {
       "type": "text"
+    },
+    "resume": {
+      "type": "text"
+    },
+    "link": {
+      "type": "string"
     },
     "content": {
       "type": "richtext"

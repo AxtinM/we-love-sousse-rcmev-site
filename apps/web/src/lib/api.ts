@@ -3,9 +3,20 @@
  * - Server-side (Docker): uses internal service name
  * - Client-side (Browser): detects environment from hostname
  */
+function ensureApiPath(url: string): string {
+  const trimmedUrl = url.replace(/\/+$/, '');
+  return trimmedUrl.endsWith('/api') ? trimmedUrl : `${trimmedUrl}/api`;
+}
+
 function getStrapiURL(): string {
   if (typeof window === 'undefined') {
-    return process.env.STRAPI_URL || process.env.STRAPI_INTERNAL_URL || process.env.NEXT_PUBLIC_STRAPI_URL || 'http://cms:1337/api';
+    return ensureApiPath(
+      process.env.STRAPI_API_URL ||
+        process.env.STRAPI_URL ||
+        process.env.STRAPI_INTERNAL_URL ||
+        process.env.NEXT_PUBLIC_STRAPI_URL ||
+        'http://cms:1337/api'
+    );
   }
   
   const hostname = window.location.hostname;
@@ -18,11 +29,25 @@ function getStrapiURL(): string {
     return 'https://cms.rcmev.com/api';
   }
   
-  return process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337/api';
+  return ensureApiPath(process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337/api');
 }
 
 const STRAPI_API_URL = getStrapiURL();
 const STRAPI_API_TOKEN = process.env.STRAPI_TOKEN;
+const STRAPI_PUBLIC_PAGE_SIZE = '100';
+
+function buildQueryString(params: Record<string, string | undefined>): string {
+  const queryParams = new URLSearchParams();
+
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined) {
+      queryParams.set(key, value);
+    }
+  });
+
+  const queryString = queryParams.toString();
+  return queryString ? `?${queryString}` : '';
+}
 
 interface StrapiResponse<T> {
   data: T;
@@ -203,8 +228,14 @@ async function fetchAPI<T>(endpoint: string, options: RequestInit = {}): Promise
 
 export async function getArticles(type?: PublicationType): Promise<Article[]> {
   try {
-    const typeFilter = type ? `&filters[publicationType][$eq]=${type}` : '';
-    const response = await fetchAPI<StrapiResponse<Article[]>>(`/articles?populate=*&sort=publishedAt:desc${typeFilter}`);
+    const queryString = buildQueryString({
+      populate: '*',
+      sort: 'publishedAt:desc',
+      status: 'published',
+      'pagination[pageSize]': STRAPI_PUBLIC_PAGE_SIZE,
+      'filters[publicationType][$eq]': type,
+    });
+    const response = await fetchAPI<StrapiResponse<Article[]>>(`/articles${queryString}`);
     return response.data || [];
   } catch (error) {
     console.warn('Failed to fetch articles:', error);
@@ -214,7 +245,13 @@ export async function getArticles(type?: PublicationType): Promise<Article[]> {
 
 export async function getArticleBySlug(slug: string): Promise<Article | null> {
   try {
-    const response = await fetchAPI<StrapiResponse<Article[]>>(`/articles?filters[slug][$eq]=${slug}&populate=*`);
+    const queryString = buildQueryString({
+      populate: '*',
+      status: 'published',
+      'pagination[pageSize]': '1',
+      'filters[slug][$eq]': slug,
+    });
+    const response = await fetchAPI<StrapiResponse<Article[]>>(`/articles${queryString}`);
     return response.data?.[0] || null;
   } catch (error) {
     console.warn('Failed to fetch article by slug:', error);
@@ -224,7 +261,13 @@ export async function getArticleBySlug(slug: string): Promise<Article | null> {
 
 export async function getPressCoverage(): Promise<PressCoverage[]> {
   try {
-    const response = await fetchAPI<StrapiResponse<PressCoverage[]>>('/press-coverages?populate=*&sort=order:asc');
+    const queryString = buildQueryString({
+      populate: '*',
+      sort: 'order:asc',
+      status: 'published',
+      'pagination[pageSize]': STRAPI_PUBLIC_PAGE_SIZE,
+    });
+    const response = await fetchAPI<StrapiResponse<PressCoverage[]>>(`/press-coverages${queryString}`);
     return response.data || [];
   } catch (error) {
     console.warn('Failed to fetch press coverage:', error);
@@ -244,8 +287,14 @@ export async function getPartners(): Promise<Partner[]> {
 
 export async function getProducts(options?: { featured?: boolean }): Promise<Product[]> {
   try {
-    const featuredFilter = options?.featured ? '&filters[featured][$eq]=true' : '';
-    const response = await fetchAPI<StrapiResponse<Product[]>>(`/products?populate=*&sort=createdAt:desc${featuredFilter}`);
+    const queryString = buildQueryString({
+      populate: '*',
+      sort: 'createdAt:desc',
+      status: 'published',
+      'pagination[pageSize]': STRAPI_PUBLIC_PAGE_SIZE,
+      'filters[featured][$eq]': options?.featured ? 'true' : undefined,
+    });
+    const response = await fetchAPI<StrapiResponse<Product[]>>(`/products${queryString}`);
     return response.data || [];
   } catch (error) {
     console.warn('Failed to fetch products:', error);
@@ -255,7 +304,13 @@ export async function getProducts(options?: { featured?: boolean }): Promise<Pro
 
 export async function getProductBySlug(slug: string): Promise<Product | null> {
   try {
-    const response = await fetchAPI<StrapiResponse<Product[]>>(`/products?filters[slug][$eq]=${slug}&populate=*`);
+    const queryString = buildQueryString({
+      populate: '*',
+      status: 'published',
+      'pagination[pageSize]': '1',
+      'filters[slug][$eq]': slug,
+    });
+    const response = await fetchAPI<StrapiResponse<Product[]>>(`/products${queryString}`);
     return response.data?.[0] || null;
   } catch (error) {
     console.warn('Failed to fetch product by slug:', error);

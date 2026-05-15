@@ -4,42 +4,12 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { ChevronRightIcon, CalendarDaysIcon } from '@heroicons/react/24/outline';
-import { getClientStrapiURL, getClientStrapiBaseURL } from '@/lib/utils';
-
-interface Article {
-  id: number;
-  documentId: string;
-  title: string;
-  slug: string;
-  excerpt: string;
-  content: string;
-  publishedAt: string;
-  createdAt: string;
-  updatedAt: string;
-  coverImage: {
-    id: number;
-    url: string;
-    alternativeText: string;
-    formats: {
-      large?: { url: string };
-      medium?: { url: string };
-      small?: { url: string };
-      thumbnail?: { url: string };
-    };
-  };
-}
-
-interface ArticlesResponse {
-  data: Article[];
-  meta: {
-    pagination: {
-      page: number;
-      pageSize: number;
-      pageCount: number;
-      total: number;
-    };
-  };
-}
+import {
+  getArticles,
+  getStrapiMediaAltText,
+  getStrapiMediaUrl,
+  type Article,
+} from '@/lib/api';
 
 export default function ArticlesSection() {
   const [articles, setArticles] = useState<Article[]>([]);
@@ -48,15 +18,8 @@ export default function ArticlesSection() {
   useEffect(() => {
     const fetchArticles = async () => {
       try {
-        const apiUrl = getClientStrapiURL();
-        const response = await fetch(`${apiUrl}/articles?populate=*&pagination[limit]=3&sort=publishedAt:desc`);
-        if (response.ok) {
-          const data: ArticlesResponse = await response.json();
-          setArticles(data.data || []);
-        } else {
-          console.warn('Failed to fetch articles - CMS may not be available');
-          setArticles([]);
-        }
+        const data = await getArticles();
+        setArticles(data.slice(0, 3));
       } catch (error) {
         console.error('Error fetching articles:', error);
         setArticles([]);
@@ -78,12 +41,8 @@ export default function ArticlesSection() {
 
   const getImageUrl = (article: Article) => {
     if (!article.coverImage) return '/images/default-article.jpg';
-    
-    const formats = article.coverImage.formats;
-    const baseUrl = getClientStrapiBaseURL();
-    return `${baseUrl}${
-      formats.medium?.url || formats.large?.url || formats.small?.url || article.coverImage.url
-    }`;
+
+    return getStrapiMediaUrl(article.coverImage) || '/images/default-article.jpg';
   };
 
   if (loading) {
@@ -167,7 +126,7 @@ export default function ArticlesSection() {
                   <div className="relative h-48 sm:h-56 overflow-hidden">
                     <img
                       src={getImageUrl(article)}
-                      alt={article.coverImage?.alternativeText || article.title}
+                      alt={getStrapiMediaAltText(article.coverImage, article.title)}
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -181,7 +140,7 @@ export default function ArticlesSection() {
                   <div className="p-6 sm:p-8">
                     <div className="flex items-center text-xs sm:text-sm text-gray-500 mb-3 sm:mb-4">
                       <CalendarDaysIcon className="h-3 w-3 sm:h-4 sm:w-4 mr-2 text-emerald-500" />
-                      {formatDate(article.publishedAt)}
+                      {formatDate(article.publishedAt || article.createdAt)}
                     </div>
                     
                     <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-3 sm:mb-4 group-hover:text-emerald-700 transition-colors duration-300 line-clamp-2 leading-tight">

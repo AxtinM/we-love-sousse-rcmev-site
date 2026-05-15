@@ -4,21 +4,21 @@
 # Instructions:
 # 1. Make sure .env file is configured
 # 2. Run: docker-compose up -d --build
-# 3. Access Strapi admin at http://localhost:1337/admin
-# 4. Access web app at http://localhost:3000
+# 3. Access web app at https://rcmev.com
+# 4. Access Strapi admin at https://cms.rcmev.com/admin
 # =============================================================================
 
 services:
   # PostgreSQL Database
   db:
-    image: postgres:15-alpine
+    image: postgres:15.15-alpine
     env_file: ./.env
     environment:
       POSTGRES_DB: ${DATABASE_NAME}
       POSTGRES_USER: ${DATABASE_USERNAME}
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
       - ./docker/postgres:/docker-entrypoint-initdb.d
@@ -60,7 +60,7 @@ services:
       - DATABASE_PASSWORD=${DATABASE_PASSWORD}
       - DATABASE_SSL=false
     ports:
-      - "1337:1337"
+      - "127.0.0.1:1337:1337"
     depends_on:
       db:
         condition: service_healthy
@@ -81,26 +81,33 @@ services:
       - NEXT_PUBLIC_STRAPI_URL=${NEXT_PUBLIC_STRAPI_URL}
       - STRAPI_API_URL=${STRAPI_API_URL}
     ports:
-      - "3000:3000"
+      - "127.0.0.1:3000:3000"
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    read_only: true
+    tmpfs:
+      - /tmp:size=128m,mode=1777
+    pids_limit: 256
     depends_on:
       - cms
     restart: always
 
-  # Caddy Reverse Proxy (Only needed for VPS with SSL)
-  # Uncomment this service when deploying to VPS
-  # proxy:
-  #   image: caddy:2-alpine
-  #   ports:
-  #     - "80:80"
-  #     - "443:443"
-  #   volumes:
-  #     - ./Caddyfile:/etc/caddy/Caddyfile
-  #     - caddy_data:/data
-  #     - caddy_config:/config
-  #   depends_on:
-  #     - web
-  #     - cms
-  #   restart: always
+  # Caddy Reverse Proxy (primary public entry point on VPS)
+  proxy:
+    image: caddy:2-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - web
+      - cms
+    restart: always
 
 volumes:
   db_data:

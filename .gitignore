@@ -20,6 +20,7 @@ lerna-debug.log*
 apps/*/package-lock.json
 apps/*/yarn.lock
 apps/*/pnpm-lock.yaml
+!apps/web/package-lock.json
 
 # Build outputs
 dist/

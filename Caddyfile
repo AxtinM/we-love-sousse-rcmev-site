@@ -1,4 +1,17 @@
 rcmev.com {
+    @blocked_next_action header_regexp next_action Next-Action .+
+    respond @blocked_next_action "forbidden" 403
+
+    @blocked_post_root {
+        method POST
+        path /
+        header_regexp content_type Content-Type (?i)multipart/form-data
+    }
+    respond @blocked_post_root "forbidden" 403
+
+    @blocked_paths path_regexp blocked_paths (?i)^/(?:\.env(?:\..*)?|\.git(?:/.*)?|\.aws(?:/.*)?|wp-.*|xmlrpc\.php|cgi-bin(?:/.*)?|.*\.php)$
+    respond @blocked_paths "forbidden" 403
+
     reverse_proxy web:3000
 }
 
